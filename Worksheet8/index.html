@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet8</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+        <h1>
+        <a href="../index.html" style="font-size:36px;">HOME</a>
+        </h1>
+        <div>
+        <hr>
+        <br>
+        <h3>
+        <a href="worksheet8_1.html">Worksheet 8 - part 1</a><br>
+        <a href="worksheet8_2.html">Worksheet 8 - part 2</a><br>
+        <a href="worksheet8_3.html">Worksheet 8 - part 3</a><br>
+        <a href="worksheet8_4.html">Worksheet 8 - part 4</a><br>
+        </h3>
+        <br>
+        <hr>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <h2 style="color: #333;">Task:</h2>
+          <p>The purpose of this set of exercises is to produce simple shadows using
+            projection matrices. As a side product, the aim is to get a better
+            understanding of the rasterization pipeline. We are only concerned with
+            generating the shadows – this means that the Phong illumination model is
+            not needed for this set of exercises</p>
+        </div>
+        <p>
+            02561 Computer Graphics - George Stamatopoulos s230251
+        </p>
+    </center>
+    <script type="text/javascript">
+
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+      };
+    </script>
+  </body>
+</html>

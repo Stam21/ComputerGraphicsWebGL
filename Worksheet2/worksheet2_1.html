@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Worksheet2</title>
+        <link rel="stylesheet" type="text/css" href="index.css">
+    </head>
+
+    <body onload="showPage()">
+        <div id="bodyLoad">
+            <img src="../5314_2.jpg" />
+        </div>
+        <img src="../5314.jpg" />
+        <center style="display:none;" id="content">
+            <h1>
+            <a href="../index.html" style="font-size:36px;">HOME</a>
+            </h1>
+            <div>
+            <hr>
+            <br>
+            <h3>
+            <a href="worksheet2_1.html" class="focus">Worksheet 2 - part 1</a><br>
+            <a href="worksheet2_2.html">Worksheet 2 - part 2</a><br>
+            <a href="worksheet2_3.html">Worksheet 2 - part 3</a><br>
+            <a href="worksheet2_4.html">Worksheet 2 - part 4</a><br>
+            </h3>
+            <br>
+            <hr>
+            </div>
+            <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333;">Task:</h2>
+                <p>
+                  
+                    Start from your solution to Part 2 of Worksheet 1: A web application
+                    that clears the canvas and then draws three points.
+                    <br>
+                    Attach an event handler to the mouse click event and draw points on
+                    the canvas where the mouse was clicked. 
+                    <br>
+                    Points are offset from the tip of the mouse cursor. This is not as
+                    desired. Get the bounding rectangle of the canvas in the client area
+                    using event.target.getBoundingClientRect() and correct the mouse
+                    position using the left and top coordinates of this rectangle.
+                </p>
+              </div>
+            <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+            </canvas> 
+            <p>
+                02561 Computer Graphics - George Stamatopoulos s230251
+            </p>
+        </center>
+        <script type="text/javascript">
+            function showPage() {
+                setTimeout(() => {
+                document.getElementById("content").style.display = "block";
+                document.getElementById("bodyLoad").style.display = "none";
+                }, 500);
+                init();
+            };
+        </script>
+    </body>
+
+    <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+    <script type="text/javascript" src="./worksheet2_1.js"></script>
+    <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+    <script type="text/javascript" src="../angelCommon/MV.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        void main() {
+            gl_Position = vPosition;
+            gl_PointSize = 20.0;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        void main() {
+            gl_FragColor =vec4(0.0,0.0,0.0,1.0); // Red color
+        }
+    </script>
+    <script type="text/javascript">
+
+        let gl;
+        // Vertex data initialization
+        const vertices = [
+            1,0,
+            1,1,
+            0,0
+        ];
+        let canvas = document.getElementById("gl-canvas");
+        let index = 6;
+        let vertexBuffer;
+
+        function init() {
+            // Part 1 - Setup the WebGL context and draw canvas
+            gl = WebGLUtils.setupWebGL(canvas);
+            setupViewport(gl,canvas, [1,1,1,1]);
+            program = initShaders(gl, "vertex-shader", "fragment-shader");
+            gl.useProgram(program);
+            initBuffers();
+            drawThreePoints(gl,index,vertexBuffer);
+        };
+
+        document.addEventListener("mousedown", (event) => {
+            let rect = canvas.getBoundingClientRect();
+            if (event.buttons === 1 && (event.x>=rect.left && event.x<=rect.right) && (event.y>=rect.top && event.y<=rect.bottom))  {
+                let normalized_x = ((event.x - rect.left) / (canvas.width - 1)) * 2 - 1;
+                let normalized_y = -(((event.y - rect.top) / (canvas.height - 1)) * 2 - 1); 
+                vertices.push(...[normalized_x, normalized_y]);           
+                drawPoints(gl,vertices,index,vertexBuffer);
+                index+=2;
+            }
+        });
+
+        function initBuffers() {
+            vertexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, 1000000, gl.DYNAMIC_DRAW);
+            var positionAttributeLocation = gl.getAttribLocation(program, "vPosition");
+            gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(positionAttributeLocation);
+        }
+    </script>
+</html>
+

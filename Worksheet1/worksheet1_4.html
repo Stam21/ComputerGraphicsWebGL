@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Worksheet1</title>
+        <link rel="stylesheet" type="text/css" href="index.css">
+    </head>
+    <body onload="showPage()">
+        <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+        </div>
+        <img src="../5314.jpg" />
+        <center style="display:none;" id="content">
+            <h1>
+            <a href="../index.html" style="font-size:36px;">HOME</a>
+            </h1>
+            <div>
+            <hr>
+            <br>
+            <h3>
+            <a href="worksheet1_1.html">Worksheet 1 - part 1</a><br>
+            <a href="worksheet1_2.html">Worksheet 1 - part 2</a><br>
+            <a href="worksheet1_3.html">Worksheet 1 - part 3</a><br>
+            <a href="worksheet1_4.html" class="focus">Worksheet 1 - part 4</a><br>
+            <a href="worksheet1_5.html">Worksheet 1 - part 5</a><br>
+            </h3>
+            <br>
+            <hr>
+            </div>
+            <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333;">Task:</h2>
+                <p>
+                  
+                    A rotating square.
+                    Add a second triangle to the previous part such that you have a
+                    quadrilateral (which is maybe even a square).
+                    Center your quad (short form of quadrilateral) and rotate it such
+                    that it has its vertices on the coordinate axes.
+                    Add a rotation so the quad rotates around its center. Animate
+                    the rotation angle over time. Use requestAnimationFrame
+                    to continuously call your render function.
+                </p>
+              </div>
+            <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+            </canvas>
+            <p>
+                02561 Computer Graphics - George Stamatopoulos s230251
+            </p>
+        </center>
+        <script type="text/javascript">
+
+            function showPage() {
+                setTimeout(() => {
+                  document.getElementById("content").style.display = "block";
+                  document.getElementById("bodyLoad").style.display = "none";
+                }, 500);
+                init();
+            };
+          </script>
+    </body>
+    <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+    <script type="text/javascript" src="./worksheet1_4.js"></script>
+    <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        uniform float theta;    // Rotation angle in radians
+        void main() {
+            gl_Position.x = -sin(theta) * vPosition.x + cos(theta) * vPosition.y;
+            gl_Position.y = sin(theta) * vPosition.y + cos(theta) * vPosition.x;
+            gl_Position.z = 0.0;
+            gl_Position.w = 1.0;
+            gl_PointSize = 20.0;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        void main() {
+            gl_FragColor = vec4(1.0,1.0,1.0,1.0); // Red color
+        }
+    </script>
+    <script type="text/javascript">
+        function init() {
+            const canvas = document.getElementById("gl-canvas");
+            const gl = WebGLUtils.setupWebGL(canvas);
+            setupViewport(gl,canvas);
+            const program = initShaders(gl, "vertex-shader", "fragment-shader");
+            gl.useProgram(program);
+            setupVertexBuffer(gl,gl.TRIANGLES,program);
+        };
+    </script>
+</html>

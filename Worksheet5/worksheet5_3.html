@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet5</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+        <h1>
+        <a href="../index.html" style="font-size:36px;">HOME</a>
+        </h1>
+        <div>
+        <hr>
+        <br>
+        <h3>
+        <a href="worksheet5_3.html" class="focus">Worksheet 5 - part 3</a><br>
+        <a href="worksheet5_4.html">Worksheet 5 - part 4</a><br>
+        </h3>
+        <br>
+        <hr>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <h2 style="color: #333;">Task:</h2>
+          <p>
+            Upload the OBJ file and the associated MTL file (if used) to the server, so that
+            your WebGL application is able to load it. <br>
+            Place OBJParser.js on the server together with the other library files and use
+            Listing 10.18 from the WebGL Programming Guide to load the triangle mesh
+            from the OBJ file<br>
+            Set up the camera and draw your 3D object as an indexed face set using a simple
+            set of shaders.
+          </p>
+        </div>
+        <div class="canvas-container">
+            
+          <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+          </canvas>
+          <div class="container">
+                  <button id="changeorbitButton" class="button"> Stop Rotation</button>
+          </div>
+        </div>
+        <p>
+            02561 Computer Graphics - George Stamatopoulos s230251
+        </p>
+    </center>
+    <script type="text/javascript">
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+          init();
+      };
+    </script>
+  </body>
+  <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+  <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+  <script type="text/javascript" src="../angelCommon/MV.js"></script>
+  <script type="text/javascript" src="../angelCommon/OBJParser.js"></script>
+  <script type="text/javascript" src="./worksheet5_3.js"></script>
+  <script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec3 vPosition;
+    attribute vec4 vColor;
+    attribute vec3 vNormal;
+    
+    uniform mat4 modelView;
+    uniform mat4 perspectiveMatrix;
+
+    varying vec4 fColor;
+
+    void main() {
+        fColor = vColor;
+        
+        vec4 cameraPos = modelView * vec4(vPosition, 1);
+        gl_Position = perspectiveMatrix * cameraPos;
+    }
+  </script>
+  <script id="fragment-shader" type="x-shader/x-fragment">
+    precision highp float;
+    
+    varying vec4 fColor;
+
+    void main() {
+        gl_FragColor = fColor;
+    }
+  </script>
+  
+  <script type="text/javascript">
+        function init() {
+            start();
+        };
+  </script>
+</html>

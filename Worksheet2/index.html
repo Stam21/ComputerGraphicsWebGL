@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet2</title>
+    
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+      <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+        <h1>
+        <a href="../index.html" style="font-size:36px;">HOME</a>
+        </h1>
+        <div>
+        <hr>
+        <br>
+        <h3>
+        <a href="worksheet2_1.html">Worksheet 2 - part 1</a><br>
+        <a href="worksheet2_2.html">Worksheet 2 - part 2</a><br>
+        <a href="worksheet2_3.html">Worksheet 2 - part 3</a><br>
+        <a href="worksheet2_4.html">Worksheet 2 - part 4</a><br>
+        </h3>
+        <br>
+        <hr>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <h2 style="color: #333;">Task:</h2>
+          <p>
+            
+            The purpose of this set of exercises is to start interacting with the graphics
+            elements that we draw using input devices. You will make a small 2D
+            drawing program where primitive shapes of different colors can be added
+            using the mouse. Although it is possible to draw 2D shapes using a 2D
+            canvas context, you will do it with a WebGL context as it is really not much
+            harder, and WebGL enables later extension to full 3D.
+          </p>
+          <h3>In your drawing program, you should be able to:</h3>
+            <p>
+              Use the mouse to draw different primitive shapes (point, triangle, and
+              circle).
+              <br>
+              Select the color of a shape while adding it.
+              <br>
+              Draw points at the first two vertices of a triangle and replace the
+              points by a triangle for every third vertex.
+              <br>
+              Draw a point in the circle center and replace the point by a circle for
+              every second mouse click (the second point sets the circle radius).
+              <br>
+              Use color interpolation between triangle vertices and radially in
+              circles.
+              <br>
+              Clear the canvas to the selected color (delete all shapes)</p>
+        </div>
+        <p>
+            02561 Computer Graphics - George Stamatopoulos s230251
+        </p>
+    </center>
+    <script type="text/javascript">
+
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+      };
+    </script>
+  </body>
+</html>

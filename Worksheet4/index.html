@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet4</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+        <h1>
+        <a href="../index.html" style="font-size:36px;">HOME</a>
+        </h1>
+        <div>
+        <hr>
+        <br>
+        <h3>
+        <a href="worksheet4_1.html">Worksheet 4 - part 1</a><br>
+        <a href="worksheet4_2.html">Worksheet 4 - part 2</a><br>
+        <a href="worksheet4_3.html">Worksheet 4 - part 3</a><br>
+        <a href="worksheet4_4.html">Worksheet 4 - part 4</a><br>
+        <a href="worksheet4_5.html">Worksheet 4 - part 5</a><br>
+        <a href="worksheet4_6.html">Worksheet 4 - part 6</a><br>
+        </h3>
+        <br>
+        <hr>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); padding: 20px; width: 50%; margin: 0 auto;">
+          <h3>Task : </h3>
+              <p style="font-weight: normal; width: 80%; text-align: left;">
+                The purpose of this set of exercises is to get acquainted with lighting and shading
+                in WebGL and GLSL. We compute the local illumination of an object based on
+                ambient, diffuse and specular material properties, and a light source.
+                <br>
+        </div>
+        <p>
+            02561 Computer Graphics - George Stamatopoulos s230251
+        </p>
+    </center>
+    <script type="text/javascript">
+
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+      };
+    </script>
+  </body>
+</html>

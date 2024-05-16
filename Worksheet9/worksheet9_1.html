@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet9</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+      <h1>
+      <a href="../index.html" style="font-size:36px;">HOME</a>
+      </h1>
+      <div>
+      <hr>
+      <br>
+      <h3>
+      <a href="worksheet9_1.html" class="focus">Worksheet 9 - part 1</a><br>
+      <a href="worksheet9_2.html">Worksheet 9 - part 2</a><br>
+      <a href="worksheet9_3.html">Worksheet 9 - part 3</a><br>
+      <a href="worksheet9_4.html">Worksheet 9 - part 4</a><br>
+      </h3>
+      <br>
+      <hr>
+      </div>
+      <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h2 style="color: #333;">Task:</h2>
+        <ul>
+          <li>The scene is a teapot jumping up and down on a textured ground quad with a point light circling the scene. We can set up this scene by combining Part 3 of Worksheet 5 with Part 3 of Worksheet 8.</li>
+          <ul>
+              <li>The main difficulties are (a) that the ground plane and the loaded object use different shaders and (b) that we need to position the teapot in the scene.</li>
+              <li>Use your code from Part 3 of Worksheet 5 to load and render the teapot model, which is available on DTU Learn. Scale the teapot to a quarter of its original size and construct a model matrix for it that translates it by the vector (0, −1, −3).</li>
+              <li>Insert shaders and the part that initializes and draws the textured ground quad from Part 3 of Worksheet 8. The ground quad and the teapot use different shaders. Consult the section called “Switching Shaders” from the WebGL Programming Guide to render these two objects using their own shaders. It is important to note the use of the function initAttributeVariable in the render function.</li>
+              <li>Move the teapot up and down over time by modifying the model matrix (translate along the 𝑦-axis from −1 to 0.5). Create a button that turns this motion on/off.</li>
+          </ul>
+        </ul>
+      </div>
+      <div class="canvas-container"> 
+        <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+        </canvas>
+        <div class="container">
+          <button id="stopBtn" onclick="stopAnimation()" class="button">Stop Animation</button>
+          <button id="startBtn" style="display:none;" onclick="startAnimation()" class="button">Start Animation</button>
+          </div> 
+      </div>
+      <p>
+          02561 Computer Graphics - George Stamatopoulos s230251
+      </p>
+  </center>
+    <script type="text/javascript">
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+          init();
+      };
+      function stopAnimation() {
+        document.getElementById("stopBtn").style.display = "none";
+        document.getElementById("startBtn").style.display = "inline-block";
+        cancelAnimationFrame(); // Stop the rotation
+      };
+      function startAnimation() {
+        // Start animation logic here
+        document.getElementById("startBtn").style.display = "none";
+        document.getElementById("stopBtn").style.display = "inline-block";
+        startAnimationFrame(); // Stop the rotation
+      };
+    </script>
+  </body>
+  <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+  <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+  <script type="text/javascript" src="../angelCommon/MV.js"></script>
+  <script type="text/javascript" src="../angelCommon/OBJParser.js"></script>
+  <script type="text/javascript" src="./worksheet9_1.js"></script>
+  
+    <!-- GROUND -->
+    <script id="vertex-shader-ground" type="x-shader/x-vertex">
+      attribute vec3 position;
+      attribute vec2 vTexture;
+      
+      uniform mat4 modelViewMatrix;
+      uniform mat4 projectionViewMatrix;
+      
+      varying vec2 fTexture;
+
+      void main() {
+          fTexture = vTexture;
+          gl_Position = projectionViewMatrix * modelViewMatrix * vec4(position, 1);
+      }
+  </script>
+  <script id="fragment-shader-ground" type="x-shader/x-fragment">
+      precision mediump float;
+      
+      varying vec2 fTexture;
+      uniform sampler2D tmap;
+
+      void main() {
+          gl_FragColor = texture2D(tmap, fTexture);
+      }
+  </script>
+
+  <!-- TEAPOT -->
+  <script id="vertex-shader-teapot" type="x-shader/x-vertex">
+      attribute vec3 vPosition;
+      attribute vec3 vNormal;
+      attribute vec4 vColor;
+
+      uniform mat4 modelViewMatrix;
+      uniform mat4 projectionViewMatrix;
+      varying vec4 fNormal;
+      varying mat4 fModel;
+      varying vec4 fColor;
+      varying vec4 fPosition;
+
+      void main() {
+          fPosition = vec4(vPosition,1);
+          fNormal = vec4(vNormal, 0);
+          fColor = vColor;
+          fModel = modelViewMatrix;
+          gl_Position =  projectionViewMatrix * modelViewMatrix * vec4(vPosition,1);
+      }
+  </script>
+  <script id="fragment-shader-teapot" type="x-shader/x-fragment">
+      precision mediump float;
+      varying mat4 fModel;
+      varying vec4 fPosition;
+      varying vec4 fNormal;
+      varying vec4 fColor;
+
+      void main() {
+        gl_FragColor = fColor;
+      }
+  </script>
+ 
+  <script type="text/javascript">
+        function init() {
+            start();
+        };
+  </script>
+</html>

@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Worksheet4</title>
+        <link rel="stylesheet" type="text/css" href="index.css">
+    </head>
+
+    <body onload="showPage()">
+        <div id="bodyLoad">
+              <img src="../5314_2.jpg" />
+        </div>
+        <img src="../5314.jpg" />
+        <center style="display:none;" id="content">
+            
+            <h1>
+            <a href="../index.html" style="font-size:36px;">HOME</a>
+            </h1>
+            <div>
+            <hr>
+            <br>
+            <h3>
+            <a href="worksheet4_1.html">Worksheet 4 - part 1</a><br>
+            <a href="worksheet4_2.html">Worksheet 4 - part 2</a><br>
+            <a href="worksheet4_3.html">Worksheet 4 - part 3</a><br>
+            <a href="worksheet4_4.html">Worksheet 4 - part 4</a><br>
+            <a href="worksheet4_5.html" class="focus">Worksheet 4 - part 5</a><br>
+            <a href="worksheet4_6.html">Worksheet 4 - part 6</a><br>
+            </h3>
+            <br>
+            <hr>
+            </div>
+            <br>
+            <div style="background-color: rgba(255, 255, 255, 0.5); padding: 20px; width: 50%; margin: 0 auto;">
+                <h3>Task : </h3>
+                    <p style="font-weight: normal; width: 80%; text-align: left;">
+                        Use Phong shading by moving your implementation of the Phong reflection
+                        model to the fragment shader and varying positions and normals across triangles
+                        instead of colors.
+                        <br></p>
+            </div>
+            <div class="canvas-container"> 
+                <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+                </canvas>
+                <div class="container">
+                <div class="canvas-container">
+                <button  id="increment" class="button"> Increase </button>
+                <button  id="decrement" class="button"> Decrease </button>
+                <button id="changeorbitButton" class="button"> Stop Rotation</button>
+                </div>
+                <table style="background-color:#7BA6C7;">
+                    <tbody>
+                    <tr>
+                    <td>
+                    K<sub>a</sub>
+                    <input id="ka" type="range" min="0" max="1" value="0.7" step="0.01"/>
+                    </td>
+                    </tr>
+
+                    <tr>
+                    <td>
+                    K<sub>d</sub>
+                    <input id="kd" type="range" min="0" max="1" value="0.7" step="0.01"/>
+                    </td>
+                    </tr>
+
+                    <tr>
+                    <td>
+                    K<sub>s</sub>
+                    <input id="ks" type="range" min="0" max="1" value="0.1" step="0.01"/>
+                    </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                        L<sub>e</sub>
+                        <input id="Le" type="range" min="0" max="1" value="0.9" step="0.01"/>
+                        </td>
+                        </tr>
+                    <tr>
+
+                    <td>
+                    Shininess
+                    <input id="alpha" type="range" min="0" max="200" value="100" step="5"/>
+                    </td>
+                    </tr>
+
+                    
+
+                    </tbody>
+                </table>
+                </div> 
+            </div>
+            <p>
+                02561 Computer Graphics - George Stamatopoulos s230251
+            </p>   
+        </center>
+        <script type="text/javascript">
+
+            function showPage() {
+                setTimeout(() => {
+                  document.getElementById("content").style.display = "block";
+                  document.getElementById("bodyLoad").style.display = "none";
+                }, 500);
+                init()
+            };
+        </script>
+    </body>
+    <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+    <script type="text/javascript" src="./worksheet4_5.js"></script>
+    <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+    <script type="text/javascript" src="../angelCommon/MV.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        uniform mat4 modelViewMatrix;
+        uniform mat4 projectionViewMatrix;
+        varying vec4 fPosition;
+        varying mat4 fModel;
+        void main() { 
+            gl_Position =  projectionViewMatrix * modelViewMatrix * vPosition;
+            fPosition = vPosition;
+            fModel = modelViewMatrix;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying mat4 fModel;
+        vec4 vNormal;
+        uniform vec4 lightPosition;
+        uniform vec4 ka;
+        uniform vec4 kd;
+        uniform vec4 ks;
+        uniform float shininess;
+        uniform vec4 Le;
+        varying vec4 fPosition;
+
+        void main() {
+            vec4 pos = (fModel * fPosition);
+
+            vec4 n = normalize(fModel*vec4(vNormal.xyz,0.0));
+            vec4 light = fModel * lightPosition;
+           
+            // ambient
+            vec4 ambient = ka * Le;
+            
+            // diffuse
+            vec4 diffuse = kd * Le * max(0.0, dot(n, normalize(-light)));
+
+            // specular
+            vec4 view = normalize(vec4(0.0, 0.0, 0.0, 1.0)-vec4(pos.xyz,1.0));
+            vec4 reflection = normalize(reflect(-light, n));
+
+            vec4 specular = vec4(0,0,0,1);
+            if (max(0.0, dot(n, light)) > 0.0)
+            {
+                float alpha = max(0.0, dot(view, reflection));
+                specular = ks * Le * pow(alpha, shininess);
+            }
+            vec4 baseColor = fPosition * 0.5 + 0.5;
+            gl_FragColor = baseColor * (ambient + diffuse + specular);;
+        }
+    </script>
+    <script type="text/javascript">
+
+        var subdivision = 5;
+        var gl;
+
+        function init() {
+            const canvas = document.getElementById("gl-canvas");
+            gl = WebGLUtils.setupWebGL(canvas);
+            var ext = gl.getExtension('OES_element_index_uint');
+            if (!ext) {
+                console.log('Warning: Unable to use an extension');
+            }
+            setupViewport(gl,canvas);
+            program = initShaders(gl, "vertex-shader", "fragment-shader");
+            gl.useProgram(program);
+            gl.enable(gl.CULL_FACE);
+            gl.cullFace(gl.BACK);
+            gl.enable(gl.DEPTH_TEST);
+            setupVertexBufferCube(gl,program,subdivision);
+
+            var incrementBtn = document.getElementById("increment");
+            var decrementBtn = document.getElementById("decrement");
+
+            incrementBtn.onclick = function(){
+            if(subdivision < 6) subdivision++;
+                setupVertexBufferCube(gl,program,subdivision);
+            };
+            decrementBtn.onclick = function(){
+                if(subdivision > 0) subdivision--;
+                setupVertexBufferCube(gl,program,subdivision);
+            };
+
+
+
+            render();
+        }
+    </script>
+
+</html>

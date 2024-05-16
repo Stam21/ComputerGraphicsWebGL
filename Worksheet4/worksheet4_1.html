@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Worksheet4</title>
+        <link rel="stylesheet" type="text/css" href="index.css">
+    </head>
+
+    <body onload="showPage()">
+        <div id="bodyLoad">
+              <img src="../5314_2.jpg" />
+        </div>
+        <img src="../5314.jpg" />
+        <center style="display:none;" id="content">
+            
+            <h1>
+            <a href="../index.html" style="font-size:36px;">HOME</a>
+            </h1>
+            <div>
+            <hr>
+            <br>
+            <h3>
+            <a href="worksheet4_1.html" class="focus">Worksheet 4 - part 1</a><br>
+            <a href="worksheet4_2.html">Worksheet 4 - part 2</a><br>
+            <a href="worksheet4_3.html">Worksheet 4 - part 3</a><br>
+            <a href="worksheet4_4.html">Worksheet 4 - part 4</a><br>
+            <a href="worksheet4_5.html">Worksheet 4 - part 5</a><br>
+            <a href="worksheet4_6.html">Worksheet 4 - part 6</a><br>
+            </h3>
+            <br>
+            <hr>
+            </div>
+            <div style="background-color: rgba(255, 255, 255, 0.5); padding: 20px; width: 50%; margin: 0 auto;">
+                <h3>Task : </h3>
+                    <p style="font-weight: normal; width: 80%; text-align: left;">
+                        Draw a sphere in perspective view. <br>
+                        -Start from Part 2 of Worksheet 3, which draws three wireframe cubes in
+                        perspective view. Simplify such that you draw just one cube in the image
+                        center and switch to drawing triangles instead of wireframe. <br>
+                        -Draw a unit sphere instead of a unit cube using recursive subdivision of a
+                        tetrahedron.<br>
+                        -Insert two buttons: one which increments the subdivision level and one
+                        which decrements the subdivision level.<br>
+                    </p>
+            </div>
+            <div class="canvas-container"> 
+                
+                <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+                </canvas>
+                <div class="container">
+                        <button onclick="changeSubdivision(event)" id="increment" class="button"> Increase </button>
+                        <button onclick="changeSubdivision(event)" id="decrement" class="button"> Decrease </button>
+                </div>
+            </div>
+            <p>
+                02561 Computer Graphics - George Stamatopoulos s230251
+            </p>   
+        </center>
+        <script type="text/javascript">
+
+            function showPage() {
+                setTimeout(() => {
+                  document.getElementById("content").style.display = "block";
+                  document.getElementById("bodyLoad").style.display = "none";
+                }, 500);
+                init();
+            };
+        </script>
+    </body>
+    <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+    <script type="text/javascript" src="./worksheet4_1.js"></script>
+    <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+    <script type="text/javascript" src="../angelCommon/MV.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        varying vec4 fColor;
+        uniform mat4 modelViewMatrix;
+        uniform mat4 projectionViewMatrix;
+
+        void main() { 
+            gl_Position =  projectionViewMatrix * modelViewMatrix * vPosition;
+            fColor = vec4(0.0, 0.0, 0.0, 1.0);
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 fColor;
+        void main() {
+            gl_FragColor = fColor;
+        }
+    </script>
+    <script type="text/javascript">
+
+        var subdivision = 5;
+        let gl;
+
+        function init() {
+            const canvas = document.getElementById("gl-canvas");
+            gl = WebGLUtils.setupWebGL(canvas);
+            var ext = gl.getExtension('OES_element_index_uint');
+            if (!ext) {
+                console.log('Warning: Unable to use an extension');
+            }
+            setupViewport(gl,canvas);
+            program = initShaders(gl, "vertex-shader", "fragment-shader");
+            gl.useProgram(program);
+            setupVertexBufferCube(gl,program,subdivision);
+        };
+
+        function changeSubdivision(event) {
+            if (event.target.id === "increment") {
+                subdivision++;
+            }
+            else {
+                subdivision--;
+            }
+            if (subdivision >= 0){
+                setupVertexBufferCube(gl,program,subdivision);
+            }
+        }
+    </script>
+
+</html>

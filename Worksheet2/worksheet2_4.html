@@ -1,0 +1,260 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Worksheet2</title>
+        <link rel="stylesheet" type="text/css" href="index.css">
+    </head>
+  
+    <body onload="showPage()">
+      <div id="bodyLoad">
+            <img src="../5314_2.jpg" />
+      </div>
+      <img src="../5314.jpg" />
+      <center style="display:none;" id="content">
+            <h1>
+            <a href="../index.html" style="font-size:36px;">HOME</a>
+            </h1>
+            <div>
+            <hr>
+            <br>
+            <h3>
+            <a href="worksheet2_1.html">Worksheet 2 - part 1</a><br>
+            <a href="worksheet2_2.html">Worksheet 2 - part 2</a><br>
+            <a href="worksheet2_3.html">Worksheet 2 - part 3</a><br>
+            <a href="worksheet2_4.html" class="focus">Worksheet 2 - part 4</a><br>
+            </h3>
+            <br>
+            <hr>
+            </div>
+            <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333;">Task:</h2>
+                <p>
+                    
+                    Add a button for a circle drawing mode.
+                    <br>
+                    When drawing in circle mode, add a point on the first click and keep
+                    a record of the point that was clicked. On the second click, use the
+                    position of the point on record and that of the second click to find the
+                    circle center and radius and replace the point with vertices (positions
+                    and colors) for the circle (refer to Part 5 of Worksheet 1). If needed,
+                    modify your circle drawing routine so that the circle can be drawn as
+                    triangles (using gl.TRIANGLES)
+                </p>
+            </div>
+            <div style="display:inline-block; text-align: center;">
+                <button class="buttonPoint" onclick="setShape(event)">Add Point</button>
+                <button class="buttonTriangle"  onclick="setShape(event)">Add Triangle</button>
+                <button class="buttonCircle"  onclick="setShape(event)">Add Circle</button>
+            </div>
+            <div class="canvas-container"> 
+                    <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+                    </canvas> 
+                   
+                
+                <div class="container">
+                    <label for="colors">Choose a color for canvas:</label>
+                        <select id="colorsC">
+                            <option value="red">Red</option>
+                        <option value="black">Black</option>
+                        <option value="green">Green</option>
+                        <option value="blue">Blue</option>
+                        </select>
+                    <label for="colors">Choose a color for mouse:</label>
+                        <select id="colorsM">
+                            <option value="black">Black</option>
+                        <option value="red">Red</option>
+                        <option value="green">Green</option>
+                        <option value="blue">Blue</option>
+                        </select>
+                    <button class="buttonClear" onclick="clearCanvas();">Clear Workspace</button>
+                </div>
+            </div>
+            <p>
+                02561 Computer Graphics - George Stamatopoulos s230251
+            </p>
+        </center>
+        <script type="text/javascript">
+
+            function showPage() {
+                setTimeout(() => {
+                  document.getElementById("content").style.display = "block";
+                  document.getElementById("bodyLoad").style.display = "none";
+                }, 500);
+                init();
+            };
+          </script>
+    </body>
+    
+    <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+    <script type="text/javascript" src="./worksheet2_4.js"></script>
+    <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+    <script type="text/javascript" src="../angelCommon/MV.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        attribute vec4 vColor;
+        varying vec4 fColor; 
+        void main() {
+            gl_Position = vPosition;
+            gl_PointSize = 20.0;
+            fColor = vColor;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 fColor;
+        void main() {
+            gl_FragColor = fColor; // Red color
+        }
+    </script>
+    <script type="text/javascript">
+
+        let gl;
+        let canvas = document.getElementById("gl-canvas");
+        let vertices = [];
+        let verticesColors = [];
+        let shape;
+        let colors = {
+            "red": [1,0,0,1],
+            "green": [0,1,0,1],
+            "blue": [0,0,1,1],
+            "black": [0,0,0,1]
+        }
+        let drawColor;
+        let index = 0;
+        let trianglePoints = 0;
+        let circlePoints = 0;
+        let colorBuffer;
+        let vertexBuffer;
+
+        function init() {
+            
+            gl = WebGLUtils.setupWebGL(canvas);
+            shape = "point";
+            drawColor = "black";
+            setupViewport(gl,canvas, [1,0,0,1]);
+            program = initShaders(gl, "vertex-shader", "fragment-shader");
+            gl.useProgram(program);
+            enableBuffers();
+        };
+
+        document.addEventListener("mousedown", (event) => {
+            let rect = canvas.getBoundingClientRect();
+            if (event.buttons === 1 && (event.x>=rect.left && event.x<=rect.right) && (event.y>=rect.top && event.y<=rect.bottom))  {
+                let normalized_x = ((event.x - rect.left) / (canvas.width - 1)) * 2 - 1;
+                let normalized_y = -(((event.y - rect.top) / (canvas.height - 1)) * 2 - 1);             
+                let color = document.getElementById("colorsM")
+                if (colors[color.value] !== undefined) {
+                    drawColor = color.value;   
+                };
+
+                if (shape === "point" || shape === "triangle" || shape === "circle") {
+                    vertices.push(...[normalized_x, normalized_y]);
+                    verticesColors.push(...colors[drawColor])
+                }
+                
+                drawPoints(gl,vertices,index,verticesColors,vertexBuffer,colorBuffer);
+                index+=2;
+                if (shape === "triangle"){
+                    trianglePoints +=1;
+                    if (trianglePoints===3) {
+                        let tmpPoints = [];
+                        let tmpColors = [];
+                        tmpPoints.push(...vertices.slice(-6));
+                        vertices.splice(-6);
+                        tmpColors.push(...verticesColors.slice(-12));
+                        verticesColors.splice(-12);
+                        drawTriangle(gl, tmpPoints,index,tmpColors,vertexBuffer,colorBuffer);
+                        index-=5;
+                        trianglePoints = 0;
+                    }
+                }
+                else if (shape === "circle") {
+                    circlePoints +=1;
+                    
+                    if (circlePoints===2) {
+                        const c_x = vertices[vertices.length-4];
+                        const c_y = vertices[vertices.length-3];
+                        const x = vertices[vertices.length-2];
+                        const y = vertices[vertices.length-1];
+                        const deltaX = x - c_x;
+                        const deltaY = y - c_y;
+                        const radius = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                        let tmpPoints = [];
+                        let tmpColors = [];
+                        for (let i = 0; i < 100; i++) {
+                            const angle1 = (i / 100) * Math.PI * 2;
+                            const angle2 = ((i + 1) / 100) * Math.PI * 2;
+                            const x1 = c_x + radius * Math.cos(angle1);
+                            const y1 = c_y + radius * Math.sin(angle1);
+                            const x2 = c_x + radius * Math.cos(angle2);
+                            const y2 = c_y + radius * Math.sin(angle2);
+                            tmpPoints.push(...[c_x,c_y]);
+                            tmpPoints.push(...[x1,y1]);
+                            tmpPoints.push(...[x2,y2]);
+                            tmpColors.push(...verticesColors.slice(-8,-4));
+                            tmpColors.push(...verticesColors.slice(-4));
+                            tmpColors.push(...verticesColors.slice(-4));
+                        }
+                        drawCircle(gl,tmpPoints,tmpColors,index,vertexBuffer,colorBuffer);
+                        index += 96;
+                        circlePoints = 0; 
+                    }
+                }    
+            }
+        });
+
+        function setShape(event) {
+            if (event.target.className === "buttonPoint") {
+                shape = "point";
+            }
+            else if (event.target.className === "buttonTriangle") {
+                shape = "triangle";
+                trianglePoints = 0;
+            }
+            else if (event.target.className === "buttonCircle") {
+                shape = "circle";
+                circlePoints = 0;
+            }
+        } 
+
+
+        function clearCanvas() {
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, 0, gl.DYNAMIC_DRAW);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, 0, gl.DYNAMIC_DRAW);
+            let color = document.getElementById("colorsC")
+            vertices = [];
+            verticesColors = [];
+            index = 1;
+            let r = colors[color.value][0];
+            let g = colors[color.value][1];
+            let b = colors[color.value][2];
+            drawColor = color.value;
+            gl.clearColor(r,g,b,1);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            enableBuffers(gl);
+        }
+
+        function enableBuffers() {
+            vertexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, 1000000, gl.DYNAMIC_DRAW);
+            var positionAttributeLocation = gl.getAttribLocation(program, "vPosition");
+            gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(positionAttributeLocation);
+
+
+            colorBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, 2000000, gl.DYNAMIC_DRAW);
+            // Get the attribute location and enable it for vertex colors
+            const colorAttributeLocation = gl.getAttribLocation(program, "vColor");
+            gl.vertexAttribPointer(colorAttributeLocation, 4, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(colorAttributeLocation);
+        }
+    </script>
+</html>
+

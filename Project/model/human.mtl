@@ -1,0 +1,12 @@
+# Blender 4.1.0 MTL File: 'None'
+# www.blender.org
+
+newmtl Skin.001
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/stamg/Desktop/Computer Graphics/Exercises/Worksheet6/textures/earth.jpg
+map_Ns skin-6_smooth.jpg

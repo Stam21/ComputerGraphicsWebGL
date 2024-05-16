@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Worksheet3</title>
+        <link rel="stylesheet" type="text/css" href="index.css">
+    </head>
+
+    <body onload="showPage()">
+        <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+        </div>
+        <img src="../5314.jpg" />
+        <center style="display:none;" id="content">
+            <h1>
+            <a href="../index.html" style="font-size:36px;">HOME</a>
+            </h1>
+            <div>
+            <hr>
+            <br>
+            <h3>
+            <a href="worksheet3_1.html">Worksheet 3 - part 1</a><br>
+            <a href="worksheet3_2.html" class="focus">Worksheet 3 - part 2</a><br>
+            <a href="worksheet3_3.html">Worksheet 3 - part 3</a><br>
+            </h3>
+            <br>
+            <hr>
+            </div>
+            <div style="background-color: rgba(255, 255, 255, 0.5); padding: 20px; width: 50%; margin: 0 auto;">
+            <h3>Task :</h3>
+                <p style="font-weight: normal; width: 80%; text-align: left;">
+                    Draw the unit cube in different classical perspective views.
+                    <br>
+                    Introduce a projection matrix that sets the camera to be a
+                    pinhole camera with a 45 degrees vertical field of view.
+                    <br>
+                    Draw the cube three times in the same rendering. Transform the
+                    cubes so that one is in one-point (front) perspective, one is in
+                    two-point (X) perspective, and one is in three-point perspective.</p>
+            </div>
+                                
+            <canvas id="gl-canvas" width="768" height="768" style="border:1px solid #000000;">
+            </canvas> 
+            <p>
+                02561 Computer Graphics - George Stamatopoulos s230251
+            </p>
+        </center>
+        <script type="text/javascript">
+
+            function showPage() {
+                setTimeout(() => {
+                  document.getElementById("content").style.display = "block";
+                  document.getElementById("bodyLoad").style.display = "none";
+                }, 500);
+                init();
+            };
+          </script>
+    </body>
+    <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+    <script type="text/javascript" src="./worksheet3_2.js"></script>
+    <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+    <script type="text/javascript" src="../angelCommon/MV.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        attribute vec4 vColor;
+        varying vec4 fColor;
+        uniform mat4 modelViewMatrix;
+        uniform mat4 projectionViewMatrix;
+
+        void main() { 
+            fColor = vColor;
+            gl_Position =  modelViewMatrix * vPosition;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 fColor;
+        void main() {
+            gl_FragColor = fColor;
+        }
+    </script>
+    <script type="text/javascript">
+
+
+        function init() {
+            const canvas = document.getElementById("gl-canvas");
+            const gl = WebGLUtils.setupWebGL(canvas);
+            var ext = gl.getExtension('OES_element_index_uint');
+            if (!ext) {
+                console.log('Warning: Unable to use an extension');
+            }
+            setupViewport(gl,canvas);
+            program = initShaders(gl, "vertex-shader", "fragment-shader");
+            gl.useProgram(program);
+            setupVertexBufferCube(gl,program,canvas);
+        };
+    </script>
+</html>

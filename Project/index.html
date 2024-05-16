@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Final Project</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+        <h1>
+        <a href="../index.html" style="font-size:36px;">HOME</a>
+        </h1>
+        <hr>
+        <input type="file" id="textureInput">
+        <button id="applyTexture">Apply</button>
+        <div class="canvas-container"> 
+            <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+            </canvas>
+            <div class="container">
+            <button id="stopLBtn" onclick="stopLightAnimation()" class="button">Stop Light Animation</button>
+            <button id="startLBtn" style="display:none;" onclick="startLightAnimation()" class="button">Start Light Animation</button>
+            <button id="lightView" class="button"> Enter light view </button>
+            <button id="changeorbitButton" class="button"> Start Rotation</button>
+            <table style="background-color:#7BA6C7;">
+                <tbody>
+                <tr>
+                <td>
+                K<sub>a</sub>
+                <input id="ka" type="range" min="0" max="1" value="1" step="0.01"/>
+                </td>
+                </tr>
+
+                <tr>
+                <td>
+                K<sub>d</sub>
+                <input id="kd" type="range" min="0" max="1" value="0.7" step="0.01"/>
+                </td>
+                </tr>
+
+                <tr>
+                <td>
+                K<sub>s</sub>
+                <input id="ks" type="range" min="0" max="1" value="0.1" step="0.01"/>
+                </td>
+                </tr>
+
+                <tr>
+                    <td>
+                    L<sub>e</sub>
+                    <input id="Le" type="range" min="0" max="1" value="0.9" step="0.01"/>
+                    </td>
+                    </tr>
+                <tr>
+
+                <td>
+                Shininess
+                <input id="alpha" type="range" min="0" max="200" value="100" step="5"/>
+                </td>
+                </tr>
+
+                
+
+                </tbody>
+            </table>
+            <label for="wrapMode">Texture Wrap Mode:</label>
+            <select id="wrapMode">
+                <option value="REPEAT">Repeat</option>
+                <option value="CLAMP_TO_EDGE">Clamp to Edge</option>
+            </select>
+    
+            <label for="filterMode">Texture Filter Mode:</label>
+            <select id="filterMode">
+                <option value="NEAREST">Nearest</option>
+                <option value="LINEAR">Linear</option>
+                <option value="NEAREST_MIPMAP_NEAREST">Nearest Mipmap Nearest</option>
+                <option value="LINEAR_MIPMAP_NEAREST">Linear Mipmap Nearest</option>
+                <option value="NEAREST_MIPMAP_LINEAR">Nearest Mipmap Linear</option>
+                <option value="LINEAR_MIPMAP_LINEAR" selected>Linear Mipmap Linear</option>
+            </select>
+            <button id="applySettings" class="button">Apply Settings</button>
+            </div> 
+        </div>
+        <p>
+            02561 Computer Graphics - George Stamatopoulos s230251
+        </p>
+    </center>
+  </body>
+  <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+  <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+  <script type="text/javascript" src="../angelCommon/MV.js"></script>
+  <script type="text/javascript" src="../angelCommon/OBJParser.js"></script>
+  <script type="text/javascript" src="../angelCommon/quaternion.js"></script>
+  <script type="text/javascript" src="./proj.js"></script>
+  <script type="text/javascript">
+    function showPage() {
+        setTimeout(() => {
+          document.getElementById("content").style.display = "block";
+          document.getElementById("bodyLoad").style.display = "none";
+        }, 500);
+        var fileInput = document.getElementById('textureInput');
+        // Check if a file is added to the input
+        fileInput.value = '';
+        init();
+    };
+    function stopLightAnimation() {
+        document.getElementById("stopLBtn").style.display = "none";
+        document.getElementById("startLBtn").style.display = "inline-block";
+        cancelLightAnimationFrame(); // Stop the rotation
+      };
+      function startLightAnimation() {
+        // Start animation logic here
+        document.getElementById("startLBtn").style.display = "none";
+        document.getElementById("stopLBtn").style.display = "inline-block";
+        startLightAnimationFrame(); // Stop the rotation
+      };
+  </script>
+  <!-- GROUND -->
+  <script id="vertex-shader-ground" type="x-shader/x-vertex">
+    attribute vec3 position;
+    attribute vec2 vTexture;
+
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionViewMatrix;
+
+    varying vec3 fPosition;
+    varying vec2 fTexture;
+
+    void main() {
+        gl_Position = projectionViewMatrix * modelViewMatrix * vec4(position, 1);
+        fPosition = position;
+        fTexture = vTexture;
+    }
+  </script>
+  <script id="fragment-shader-ground" type="x-shader/x-fragment">
+      precision mediump float;
+      
+      uniform mat4 lightViewMatrix;
+      uniform mat4 lightPerspectiveMatrix;
+      
+      uniform sampler2D shadowMap;
+      uniform sampler2D tmap;
+      varying vec3 fPosition;
+      varying vec2 fTexture;
+
+      void main() {
+        vec4 positionFromLight = lightPerspectiveMatrix * lightViewMatrix * vec4(fPosition, 1);
+        vec3 shadowCoord = (positionFromLight.xyz/positionFromLight.w) / 2.0 + 0.5;
+        vec4 rgbaDepth = texture2D(shadowMap, shadowCoord.xy);
+        float depth = rgbaDepth.r;
+        float visibility = (shadowCoord.z > depth + 0.005) ? 0.7 : 1.0;
+        gl_FragColor = vec4(texture2D(tmap, fTexture).rgb * visibility, texture2D(tmap, fTexture).a);
+      }
+  </script>
+  <!-- HUMAN -->
+  <script id="vertex-shader-human" type="x-shader/x-vertex">
+    attribute vec3 vPosition;
+    attribute vec3 vNormal;
+    attribute vec4 vColor;
+    attribute vec2 vTexCoord;
+    varying vec2 fTexCoord;
+
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionViewMatrix;
+    varying vec4 fPosition;
+    varying vec4 fNormal;
+    varying vec4 fColor;
+    varying mat4 fModel;
+    void main() { 
+        gl_Position =  projectionViewMatrix * modelViewMatrix * vec4(vPosition, 1);
+        fPosition = vec4(vPosition,1);
+        fModel = modelViewMatrix;
+        fColor = vColor;
+        fNormal = vec4(vNormal, 0);
+        fTexCoord = vTexCoord;
+    }
+  </script>
+  <script id="fragment-shader-human" type="x-shader/x-fragment">
+    precision mediump float;
+    varying mat4 fModel;
+    
+    uniform vec4 lightPosition;
+    uniform vec4 ka;
+    uniform vec4 kd;
+    uniform vec4 ks;
+    uniform float shininess;
+    uniform vec4 Le;
+    varying vec4 fPosition;
+    varying vec4 fNormal;
+    varying vec4 fColor;
+    uniform sampler2D texMap;
+    uniform sampler2D shadowMapHuman;
+    uniform mat4 lightViewMatrix; // Light view matrix
+    uniform mat4 lightPerspectiveMatrix; // Light perspective matrix
+    varying vec2 fTexCoord;
+
+    void main() {
+      // Calculate the position and normal in eye coordinates
+      vec4 pos = (fModel * fPosition);
+      vec4 n = normalize(fModel * fNormal);
+  
+      // Transform light position to eye coordinates
+      vec4 lightEye = lightViewMatrix * lightPosition;
+  
+      // Calculate shadow coordinates and sample shadow map
+      vec4 positionFromLight = lightPerspectiveMatrix * lightViewMatrix * fPosition;
+      vec3 shadowCoord = (positionFromLight.xyz / positionFromLight.w) / 2.0 + 0.5;
+      vec4 rgbaDepth = texture2D(shadowMapHuman, shadowCoord.xy);
+      float depth = rgbaDepth.r;
+      float visibility = (shadowCoord.z > depth + 0.005) ? 0.7 : 1.0; // Adjust bias as needed
+  
+      // Ambient
+      vec3 ambient = ka.rgb * Le.rgb;
+  
+      // Diffuse
+      vec3 L = normalize(lightPosition.xyz - pos.xyz);
+      float diffuseIntensity = max(0.0, dot(n.xyz, L));
+      vec3 diffuse = kd.rgb * Le.rgb * diffuseIntensity;
+  
+      // Specular
+      vec3 V = normalize(-pos.xyz);
+      vec3 H = normalize(L + V);
+      float specularIntensity = pow(max(dot(n.xyz, H), 0.0), shininess);
+      vec3 specular = ks.rgb * Le.rgb * specularIntensity;
+  
+      // Final color with ambient, diffuse, and specular components
+      vec4 finalColor = texture2D(texMap, fTexCoord);
+      vec3 lighting = ambient + diffuse + specular;
+      gl_FragColor = vec4(finalColor.rgb * lighting * visibility, finalColor.a);
+    }
+  
+  </script>
+
+  <!-- SHADOW -->
+  <script id="vertex-shader-shadow" type="x-shader/x-vertex">
+    attribute vec3 vPosition;
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionViewMatrix;
+
+    void main() {
+        gl_Position =  projectionViewMatrix * modelViewMatrix * vec4(vPosition,1);
+    }
+  </script>
+  <script id="fragment-shader-shadow" type="x-shader/x-fragment">
+      precision highp float;
+
+      void main() {
+          gl_FragColor = vec4(vec3(gl_FragCoord.z), 1.0);
+      }
+  </script>
+  
+  <script type="text/javascript">
+        function init() {
+          start();
+        };
+  </script>
+</html>

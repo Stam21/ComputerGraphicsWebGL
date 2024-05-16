@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet3</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+      <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+        <h1>
+        <a href="../index.html" style="font-size:36px;">HOME</a>
+        </h1>
+        <div>
+        <hr>
+        <br>
+        <h3>
+        <a href="worksheet3_1.html">Worksheet 3 - part 1</a><br>
+        <a href="worksheet3_2.html">Worksheet 3 - part 2</a><br>
+        <a href="worksheet3_3.html" class="focus">Worksheet 3 - part 3</a><br>
+        </h3>
+        <br>
+        <hr>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto;">
+          <p style="font-weight: normal; width: 80%; text-align: left;">
+            Reflect on the theory of affine transformations and viewing
+            transformations by doing the following:
+            <br>
+            List the transformation matrices that you used in Parts 1 and 2
+            (use general expressions/functions rather than concrete
+            numbers).
+            <br>
+            For each cube, write down a formula showing how the matrices
+            were concatenated to become the current transformation matrix
+            (CTM) that was used to transform the vertices in the vertex
+            shader.
+          </p>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto;">
+          <h3>Answer:</h3>
+          <p style="font-weight: normal; width: 80%; text-align: left;">
+            <span style="font-weight: bold; font-style: italic;">Part 1:</span>
+            <br>
+            The matrices used were the result of the lookAt function and the orthographic projection.
+            Therefore,the CTM formula used to transform the vertices in the vertex shader is the following : 
+            <br>
+            CTM = lookAt x ortho
+            <br>
+            This way the camera Position and orientation is altered to show the unit cube in isometric view.
+            <br>
+            <br>
+            <span style="font-weight: bold; font-style: italic;">Part 2:</span>
+            <br>
+            For all three cubes a new matrix was introduced, the perspective matrix. Also, in order to fit in the same canvas all three cubes, a translation matrix was used as well.
+            The three-point perspective illustrated on the left of the canvas uses the following formula: 
+            <br>
+            CTM = ortho x perspective x lookAt x translate
+            <br>
+            The two-point perspective illustrated on the right of the canvas uses the following formula: 
+            <br>
+            CTM = ortho x perspective x lookAt x translate
+            <br>
+            The one-point perspective illustrated on the middle of the canvas uses the following formula: 
+            <br>
+            CTM = ortho x perspective x lookAt
+            <br>
+           </p>
+         </div>
+                          
+        <p>
+            02561 Computer Graphics - George Stamatopoulos s230251
+        </p>
+    </center>
+    <script type="text/javascript">
+
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+      };
+    </script>
+  </body>
+</html>

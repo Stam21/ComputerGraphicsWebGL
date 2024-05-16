@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet3</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+      <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+        <h1>
+        <a href="../index.html" style="font-size:36px;">HOME</a>
+        </h1>
+        <div>
+        <hr>
+        <br>
+        <h3>
+            <a href="worksheet4_1.html">Worksheet 4 - part 1</a><br>
+            <a href="worksheet4_2.html">Worksheet 4 - part 2</a><br>
+            <a href="worksheet4_3.html">Worksheet 4 - part 3</a><br>
+            <a href="worksheet4_4.html">Worksheet 4 - part 4</a><br>
+            <a href="worksheet4_5.html">Worksheet 4 - part 5</a><br>
+            <a href="worksheet4_6.html" class="focus">Worksheet 4 - part 6</a><br>
+        </h3>
+        <br>
+        <hr>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h3 style="color: #333;">Questions:</h3>
+        
+            <ol style="list-style-type: none; padding: 0; width: 80%;">
+                <li style="margin-bottom: 10px;">
+                    <strong>a) What is the difference between Phong shading and Phong lighting (the Phong reflection model)?</strong>
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <strong>b) What is the difference between flat shading, Gouraud shading, and Phong shading? List pros and cons of each. Is Gouraud or Phong shading the best method for simulating highlights? Explain.</strong>
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <strong>c) What is the difference between a directional light and a point light?</strong>
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <strong>d) Does the eye position influence the shading of an object in any way?</strong>
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <strong>e) What is the effect of setting the specular term to (0, 0, 0)?</strong>
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <strong>f) What is the effect of increasing the shininess exponent (𝛼)?</strong>
+                </li>
+                <li>
+                    <strong>g) In what coordinate space did you compute the lighting?</strong>
+                </li>
+            </ol>
+        </div>
+        
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h3 style="color: #333;">Answer:</h3>
+        
+            <ol style="list-style-type: none; padding: 0; width: 80%;">
+                <li style="margin-bottom: 10px;">
+                    <strong>a) Difference between Phong shading and Phong lighting:</strong><br>
+                    Phong shading interpolates normals across a polygon's surface to calculate lighting at each pixel, resulting in smooth shading transitions. Phong lighting, on the other hand, refers to the complete Phong reflection model, which calculates lighting contributions from ambient, diffuse, and specular components at each pixel based on the surface normals, light positions, and view direction.
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <strong>b) Difference between flat shading, Gouraud shading, and Phong shading:</strong><br>
+                    <ol>
+                        <li>
+                            <strong>Flat Shading:</strong>
+                            <ul>
+                                <li><strong>Pros:</strong> Computationally efficient; simple implementation.</li>
+                                <li><strong>Cons:</strong> Produces flat, polygonal appearance; lacks smooth shading transitions.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Gouraud Shading:</strong>
+                            <ul>
+                                <li><strong>Pros:</strong> Smoother shading transitions compared to flat shading; provides better visual quality.</li>
+                                <li><strong>Cons:</strong> Requires more computational resources; can produce inaccuracies and visual artifacts.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Phong Shading:</strong>
+                            <ul>
+                                <li><strong>Pros:</strong> Produces the most visually realistic shading; accurate simulation of specular highlights and glossy surfaces.</li>
+                                <li><strong>Cons:</strong> Highest computational cost; may not be suitable for real-time applications with limited hardware resources.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    <p><strong>Regarding which method is best for simulating highlights:</strong> It depends on the specific requirements of the application. Phong shading is generally considered the best method for accurately simulating highlights and glossy surfaces due to its per-pixel lighting calculations and interpolation of normals. However, Gouraud shading can also produce satisfactory results with smoother shading transitions and moderate computational cost, making it a good compromise between visual quality and performance in some cases. Ultimately, the choice between Gouraud and Phong shading depends on the desired balance between visual fidelity and computational efficiency for a particular application.</p>
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <strong>c) Difference between a directional light and a point light:</strong><br>
+                    A directional light emits light from infinitely far away, as if it were coming from a single direction. A point light emits light from a specific point in space in all directions.
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <strong>d) Influence of eye position on shading:</strong><br>
+                    Yes, the position of the eye (or camera) influences shading because it affects the view direction used in lighting calculations.
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <strong>e) Effect of setting the specular term to (0, 0, 0):</strong><br>
+                    Setting the specular term to (0, 0, 0) removes the specular highlights from the object's surface, leaving only ambient and diffuse lighting.
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <strong>f) Effect of increasing the shininess exponent (𝛼):</strong><br>
+                    Increasing the shininess exponent (𝛼) makes the specular highlights on the object's surface narrower and more focused.
+                </li>
+                <li>
+                    <strong>g) Coordinate space for computing lighting:</strong><br>
+                    I performed the lighting calculations in the camera space (eye coordinates).
+                </li>
+            </ol>
+        </div>
+        
+                          
+        <p>
+            02561 Computer Graphics - George Stamatopoulos s230251
+        </p>
+    </center>
+    <script type="text/javascript">
+
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Worksheet1</title>
+        <link rel="stylesheet" type="text/css" href="index.css">
+    </head>
+    <body onload="showPage()">
+        <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+        </div>
+        <img src="../5314.jpg" />
+        <center style="display:none;" id="content">
+            <h1>
+            <a href="../index.html" style="font-size:36px;">HOME</a>
+            </h1>
+            <div>
+            <hr>
+            <br>
+            <h3>
+            <a href="worksheet1_1.html">Worksheet 1 - part 1</a><br>
+            <a href="worksheet1_2.html" class="focus">Worksheet 1 - part 2</a><br>
+            <a href="worksheet1_3.html">Worksheet 1 - part 3</a><br>
+            <a href="worksheet1_4.html">Worksheet 1 - part 4</a><br>
+            <a href="worksheet1_5.html">Worksheet 1 - part 5</a><br>
+            </h3>
+            <br>
+            <hr>
+            </div>
+            <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333;">Task:</h2>
+                <p>
+                    Shaders and buffers.
+                    Load and compile a shader program. Write a basic vertex
+                    shader and a constant color fragment shader.
+                    Setup a vertex buffer with the corresponding attribute pointer.
+                    Add the coordinates and draw three points of size 20 pixels,
+                    like in the figure.
+                  
+                </p>
+              </div>
+            <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+            </canvas>
+            <p>
+                02561 Computer Graphics - George Stamatopoulos s230251
+            </p>
+        </center>
+        <script type="text/javascript">
+
+            function showPage() {
+                setTimeout(() => {
+                  document.getElementById("content").style.display = "block";
+                  document.getElementById("bodyLoad").style.display = "none";
+                }, 500);
+                init();
+            };
+          </script>
+    </body>
+    <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+    <script type="text/javascript" src="./worksheet1_2.js"></script>
+    <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        void main() {
+            gl_Position = vPosition;
+            gl_PointSize = 20.0;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        void main() {
+            gl_FragColor = vec4(0.0,0.0,0.0,1.0); // Red color
+        }
+    </script>
+    <script type="text/javascript">
+        function init() {
+            // Part 2 - Load shaders and initialize attribute buffers
+            const canvas = document.getElementById("gl-canvas");
+            const gl = WebGLUtils.setupWebGL(canvas);
+            setupViewport(gl,canvas);
+            const program = initShaders(gl, "vertex-shader", "fragment-shader");
+            gl.useProgram(program);
+            setupVertexBuffer(gl,gl.POINTS,program);
+
+        };
+    </script>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet6</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+        <h1>
+        <a href="../index.html" style="font-size:36px;">HOME</a>
+        </h1>
+        <div>
+        <hr>
+        <br>
+        <h3>
+          <a href="worksheet6_1.html" class="focus">Worksheet 6 - part 1</a><br>
+          <a href="worksheet6_2.html">Worksheet 6 - part 2</a><br>
+          <a href="worksheet6_3.html">Worksheet 6 - part 3</a><br>
+        </h3>
+        <br>
+        <hr>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <h2 style="color: #333;">Task:</h2>
+          <p>Create a rectangle with vertices:</p>
+          <ul>
+              <li>(−4, −1, −1)</li>
+              <li>(4, −1, −1)</li>
+              <li>(4, −1, −21)</li>
+              <li>(−4, −1, −21)</li>
+          </ul>
+          <p>Set up a perspective camera with a 90° field of view. Use the default view matrix and draw the rectangle in white on a blue background.</p>
+          <p>Map a procedurally generated checkerboard texture to the rectangle using the following steps:</p>
+          <ul>
+              <li>Create a texture object and bind it as the current 2D texture object.</li>
+              <li>Generate a 64 × 64 resolution texture image that forms an 8 × 8 black-and-white checkerboard, and set it to be used with the currently bound 2D texture.</li>
+              <li>Create texture coordinates (−1.5, 0.0), (2.5, 0.0), (2.5, 10.0), (−1.5, 10.0) for your rectangle, such that the texture repeats four times along the width and ten times along the length of the rectangle. Set up the texture coordinates to be received as an attribute in the vertex shader.</li>
+              <li>Set up the texture map as a uniform sampler2D in the fragment shader and link this sampler to the default texture (0). Pass the texture coordinates to the fragment shader and use them to replace the fragment color with a color from the texture map.</li>
+              <li>Set the texture filtering parameters to use nearest point sampling. This ensures texture completeness. You should now be able to draw the texture mapped rectangle.</li>
+          </ul>
+        </div>
+        <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+        </canvas>
+        <p>
+            02561 Computer Graphics - George Stamatopoulos s230251
+        </p>
+    </center>
+    <script type="text/javascript">
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+          init();
+      };
+    </script>
+  </body>
+  <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+  <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+  <script type="text/javascript" src="../angelCommon/MV.js"></script>
+  <script type="text/javascript" src="./worksheet6_1.js"></script>
+  <script id="vertex-shader" type="x-shader/x-vertex">
+
+    attribute vec3 vPosition;
+    attribute vec3 vColor;
+    attribute vec2 vTexture;
+    
+    uniform mat4 modelView;
+    uniform mat4 perspectiveMatrix;
+    
+    varying vec4 fColor;
+    varying vec2 fTexture;
+    
+    void main()
+    {
+        fColor = vec4(vColor,1.0);
+        fTexture = vTexture;
+        gl_Position = perspectiveMatrix * modelView * vec4(vPosition,1.0);
+    }
+    </script>
+    
+    <script id="fragment-shader" type="x-shader/x-fragment">
+    
+    precision mediump float;
+    
+    varying vec4 fColor;
+    varying  vec2 fTexture;
+    
+    uniform sampler2D tmap;
+    
+    void main()
+    {
+    
+        gl_FragColor = fColor * texture2D( tmap, fTexture );
+    
+    }
+    </script>
+  
+  <script type="text/javascript">
+        function init() {
+            start();
+        };
+  </script>
+</html>

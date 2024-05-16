@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet9</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+      <h1>
+      <a href="../index.html" style="font-size:36px;">HOME</a>
+      </h1>
+      <div>
+      <hr>
+      <br>
+      <h3>
+      <a href="worksheet9_1.html">Worksheet 9 - part 1</a><br>
+      <a href="worksheet9_2.html" class="focus">Worksheet 9 - part 2</a><br>
+      <a href="worksheet9_3.html">Worksheet 9 - part 3</a><br>
+      <a href="worksheet9_4.html">Worksheet 9 - part 4</a><br>
+      </h3>
+      <br>
+      <hr>
+      </div>
+      <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h2 style="color: #333;">Task:</h2>
+        <ul>
+          <li>For reference, insert the black projection shadows from Part 3 of Worksheet 8. In this scene, we use a model matrix to move the shadow-casting object. It is important to realize that the model matrix should be applied first (before the shadow projection matrix) when rendering the shadow polygons.</li>
+          <li>Set the light direction in the teapot shading according to the position of the point light circling the scene. Create a button that switches point light animation on/off.</li>
+        </ul>      
+      </div>
+      <div class="canvas-container"> 
+        <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+        </canvas>
+        <div class="container">
+          <button id="stopBtn" onclick="stopObjAnimation()" class="button">Stop Object Animation</button>
+          <button id="startBtn" style="display:none;" onclick="startObjAnimation()" class="button">Start Object Animation</button>
+          <button id="stopLBtn" onclick="stopLightAnimation()" class="button">Stop Light Animation</button>
+          <button id="startLBtn" style="display:none;" onclick="startLightAnimation()" class="button">Start Light Animation</button>
+          </div> 
+      </div>
+      <p>
+          02561 Computer Graphics - George Stamatopoulos s230251
+      </p>
+  </center>
+    <script type="text/javascript">
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+          init();
+      };
+      function stopObjAnimation() {
+        document.getElementById("stopBtn").style.display = "none";
+        document.getElementById("startBtn").style.display = "inline-block";
+        cancelObjAnimationFrame(); // Stop the rotation
+      };
+      function startObjAnimation() {
+        // Start animation logic here
+        document.getElementById("startBtn").style.display = "none";
+        document.getElementById("stopBtn").style.display = "inline-block";
+        startObjAnimationFrame(); // Stop the rotation
+      };
+      function stopLightAnimation() {
+        document.getElementById("stopLBtn").style.display = "none";
+        document.getElementById("startLBtn").style.display = "inline-block";
+        cancelLightAnimationFrame(); // Stop the rotation
+      };
+      function startLightAnimation() {
+        // Start animation logic here
+        document.getElementById("startLBtn").style.display = "none";
+        document.getElementById("stopLBtn").style.display = "inline-block";
+        startLightAnimationFrame(); // Stop the rotation
+      };
+    </script>
+  </body>
+  <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+  <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+  <script type="text/javascript" src="../angelCommon/MV.js"></script>
+  <script type="text/javascript" src="../angelCommon/OBJParser.js"></script>
+  <script type="text/javascript" src="./worksheet9_2.js"></script>
+  
+    <!-- GROUND -->
+    <script id="vertex-shader-ground" type="x-shader/x-vertex">
+      attribute vec3 position;
+      attribute vec2 vTexture;
+      
+      uniform mat4 modelViewMatrix;
+      uniform mat4 projectionViewMatrix;
+      
+      varying vec2 fTexture;
+
+      void main() {
+          fTexture = vTexture;
+          gl_Position = projectionViewMatrix * modelViewMatrix * vec4(position, 1);
+      }
+  </script>
+  <script id="fragment-shader-ground" type="x-shader/x-fragment">
+      precision mediump float;
+      
+      varying vec2 fTexture;
+      uniform sampler2D tmap;
+
+      void main() {
+          gl_FragColor = texture2D(tmap, fTexture);
+      }
+  </script>
+
+  <!-- TEAPOT -->
+  <script id="vertex-shader-teapot" type="x-shader/x-vertex">
+      attribute vec3 vPosition;
+      attribute vec3 vNormal;
+      attribute vec4 vColor;
+
+      uniform mat4 modelViewMatrix;
+      uniform mat4 projectionViewMatrix;
+      varying vec4 fNormal;
+      varying mat4 fModel;
+      varying vec4 fColor;
+      varying vec4 fPosition;
+
+      void main() {
+          fPosition = vec4(vPosition,1);
+          fNormal = vec4(vNormal, 0);
+          fColor = vColor;
+          fModel = modelViewMatrix;
+          gl_Position =  projectionViewMatrix * modelViewMatrix * vec4(vPosition,1);
+      }
+  </script>
+  <script id="fragment-shader-teapot" type="x-shader/x-fragment">
+      precision mediump float;
+
+      varying mat4 fModel;
+      varying vec4 fPosition;
+      varying vec4 fNormal;
+      varying vec4 fColor;
+      uniform bool visibility;
+
+      void main() {
+
+        if (visibility) {
+            gl_FragColor = fColor;
+        } else {
+            gl_FragColor = vec4(0, 0, 0, 1);
+        }
+      }
+  </script>
+ 
+  <script type="text/javascript">
+        function init() {
+            start();
+        };
+  </script>
+</html>

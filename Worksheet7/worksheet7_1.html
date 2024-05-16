@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet7</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+      <h1>
+      <a href="../index.html" style="font-size:36px;">HOME</a>
+      </h1>
+      <div>
+      <hr>
+      <br>
+      <h3>
+      <a href="worksheet7_1.html" class="focus">Worksheet 7 - part 1</a><br>
+      <a href="worksheet7_2.html">Worksheet 7 - part 2</a><br>
+      <a href="worksheet7_3.html">Worksheet 7 - part 3</a><br>
+      <a href="worksheet7_4.html">Worksheet 7 - part 4</a><br>
+      </h3>
+      <br>
+      <hr>
+      </div>
+      <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h2 style="color: #333;">Task:</h2>
+        <p>
+          Start from a textured sphere (Part 3 of Worksheet 6). Instead of the ordinary
+          2D texture, we will now use a cube map to texture the sphere. <br>
+          Modify your texture initialization such that it loads a cube map from six
+          image files, one file for each face. <br>
+          Once the cube map is initialized, no inverse map is needed to compute
+          texture coordinates. Simply use the world space normal as texture
+          coordinates when looking up the texture color in the fragment shader.
+        </p>
+      </div>
+      <div class="canvas-container"> 
+        <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+        </canvas>
+        <div class="container">
+        <button id="changeorbitButton" class="button"> Stop Rotation</button>
+        <table style="background-color:#7BA6C7;">
+            <tbody>
+            <tr>
+            <td>
+            K<sub>a</sub>
+            <input id="ka" type="range" min="0" max="1" value="0.7" step="0.01"/>
+            </td>
+            </tr>
+
+            <tr>
+            <td>
+            K<sub>d</sub>
+            <input id="kd" type="range" min="0" max="1" value="0.7" step="0.01"/>
+            </td>
+            </tr>
+
+            <tr>
+            <td>
+            K<sub>s</sub>
+            <input id="ks" type="range" min="0" max="1" value="0.1" step="0.01"/>
+            </td>
+            </tr>
+
+            <tr>
+                <td>
+                L<sub>e</sub>
+                <input id="Le" type="range" min="0" max="1" value="0.9" step="0.01"/>
+                </td>
+                </tr>
+            <tr>
+
+            <td>
+            Shininess
+            <input id="alpha" type="range" min="10" max="200" value="100" step="5"/>
+            </td>
+            </tr>
+
+            
+
+            </tbody>
+        </table>
+        <label for="wrapMode">Texture Wrap Mode:</label>
+        <select id="wrapMode">
+            <option value="REPEAT">Repeat</option>
+            <option value="CLAMP_TO_EDGE">Clamp to Edge</option>
+        </select>
+
+        <label for="filterMode">Texture Filter Mode:</label>
+        <select id="filterMode">
+            <option value="NEAREST">Nearest</option>
+            <option value="LINEAR">Linear</option>
+            <option value="NEAREST_MIPMAP_NEAREST">Nearest Mipmap Nearest</option>
+            <option value="LINEAR_MIPMAP_NEAREST">Linear Mipmap Nearest</option>
+            <option value="NEAREST_MIPMAP_LINEAR">Nearest Mipmap Linear</option>
+            <option value="LINEAR_MIPMAP_LINEAR">Linear Mipmap Linear</option>
+        </select>
+        
+        <button onclick="start()" class="button">Apply Settings</button>
+        </div> 
+      </div>
+      <p>
+          02561 Computer Graphics - George Stamatopoulos s230251
+      </p>
+  </center>
+    <script type="text/javascript">
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+          init();
+      };
+    </script>
+  </body>
+  <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+  <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+  <script type="text/javascript" src="../angelCommon/MV.js"></script>
+  <script type="text/javascript" src="./worksheet7_1.js"></script>
+  <script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
+    attribute vec4 vNormal;
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionViewMatrix;
+    uniform vec4 lightPosition;
+    varying vec4 fColor;
+    
+    uniform vec4 ka;
+    uniform vec4 kd;
+    uniform vec4 ks;
+    uniform float shininess;
+    uniform vec4 Le;
+
+    varying vec4 fNormal;
+
+    void main() { 
+        vec4 pos = (modelViewMatrix * vPosition);
+
+        vec4 n = normalize(modelViewMatrix*vec4(vNormal.xyz,0.0));
+        vec4 light = modelViewMatrix * lightPosition;
+       
+        // ambient
+        vec4 ambient = ka * Le;
+        
+        // diffuse
+        vec4 diffuse = kd * Le * max(0.0, dot(n, normalize(-light)));
+
+        // specular
+        vec4 view = normalize(vec4(0.0, 0.0, 0.0, 1.0)-vec4(pos.xyz,1.0));
+        vec4 reflection = normalize(reflect(-light, n));
+
+        vec4 specular = vec4(0,0,0,1);
+        if (max(0.0, dot(n, light)) > 0.0)
+        {
+            float alpha = max(0.0, dot(view, reflection));
+            specular = ks * Le * pow(alpha, shininess);
+        }
+
+        gl_Position =  projectionViewMatrix * modelViewMatrix * vPosition;
+        fColor = (ambient + diffuse + specular);
+        fNormal = vNormal;
+    }
+  </script>
+  <script id="fragment-shader" type="x-shader/x-fragment">
+    #define M_PI 3.1415926535897932384626433832795
+    precision mediump float;
+    varying vec4 fNormal;
+    varying vec4 fColor;
+    uniform samplerCube tmap;
+
+    void main() {
+        gl_FragColor = textureCube( tmap, fNormal.xyz)*fColor;
+    }
+  </script>
+ 
+  <script type="text/javascript">
+        function init() {
+            start();
+        };
+  </script>
+</html>

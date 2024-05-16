@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet10</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+        <h1>
+        <a href="../index.html" style="font-size:36px;">HOME</a>
+        </h1>
+        <div>
+        <hr>
+        <br>
+        <h3>
+        <a href="worksheet10_1.html">Worksheet 10 - part 1</a><br>
+        <a href="worksheet10_2.html">Worksheet 10 - part 2</a><br>
+        <a href="worksheet10_3.html">Worksheet 10 - part 3</a><br>
+        <a href="worksheet10_4.html">Worksheet 10 - part 4</a><br>
+        </h3>
+        <br>
+        <hr>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <h2 style="color: #333;">Task:</h2>
+          <p>In this worksheet, we return to user interaction. Our goal is to implement
+            interactive orbiting, dollying, and panning of the camera. Orbiting is moving
+            spherically around the scene center. Dollying is moving radially to have the
+            camera closer to the center or further away from it. Panning is moving the
+            camera in a plane parallel to the image plane. These three interaction modes
+            are typical for a trackball, but this is not a commonly available tool, so we
+            implement a virtual trackball and attach it to the mouse. The virtual trackball
+            can equally well be attached to a touch interface.
+            
+          </p>            
+        </div>
+        <p>
+            02561 Computer Graphics - George Stamatopoulos s230251
+        </p>
+    </center>
+    <script type="text/javascript">
+
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+      };
+    </script>
+  </body>
+</html>

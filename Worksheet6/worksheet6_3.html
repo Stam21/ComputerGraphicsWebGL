@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet6</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+        <h1>
+        <a href="../index.html" style="font-size:36px;">HOME</a>
+        </h1>
+        <div>
+        <hr>
+        <br>
+        <h3>
+          <a href="worksheet6_1.html">Worksheet 6 - part 1</a><br>
+          <a href="worksheet6_2.html">Worksheet 6 - part 2</a><br>
+          <a href="worksheet6_3.html" class="focus">Worksheet 6 - part 3</a><br>
+        </h3>
+        <br>
+        <hr>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <h2 style="color: #333;">Task:</h2>
+          <p>Start from a diffuse sphere illuminated by a directional light (Part 3 of Worksheet 4). We will now map a texture depicting Earth onto the sphere. To do this, we load the texture from an image file and calculate the texture coordinates in the fragment shader. Some steps to follow:</p>
+          <ul>
+              <li>When initializing the texture, load the texture image from the file earth.jpg (available on CampusNet).</li>
+              <li>The next step is to pass the normal of the sphere to the fragment shader and use it to calculate the texture coordinates. The normals define points on the unit sphere. The unit sphere is then an intermediate surface to which we can map texture coordinates. Use spherical coordinates to define the relation between a surface normal (a point on the unit sphere) and the texture coordinates (u and v).</li>
+              <li>Invert the relation you found using inverse trigonometric functions. Use the resulting formula in the fragment shader to calculate texture coordinates from the surface normal. An atan2 function is needed to get the signs right. In GLSL, the atan2 function is simply to use atan(y, x) instead of atan(y/x).</li>
+              <li>Use the color found by texture look-up as Kd and Ka of the sphere and illuminate the sphere by a directional source and an ambient source.</li>
+              <li>Spin the globe. The earth texture has high resolution leading to minification issues, especially in the mountain ranges during a spin. Choose a filtering option that betters these minification issues without too much blurring of the texture. Explain your choice.</li>
+          </ul>
+        </div>
+        <div class="canvas-container"> 
+            <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+            </canvas>
+            <div class="container">
+            <table style="background-color:#7BA6C7;">
+                <tbody>
+                <tr>
+                <td>
+                K<sub>a</sub>
+                <input id="ka" type="range" min="0" max="1" value="0.7" step="0.01"/>
+                </td>
+                </tr>
+
+                <tr>
+                <td>
+                K<sub>d</sub>
+                <input id="kd" type="range" min="0" max="1" value="0.7" step="0.01"/>
+                </td>
+                </tr>
+
+                <tr>
+                <td>
+                K<sub>s</sub>
+                <input id="ks" type="range" min="0" max="1" value="0.1" step="0.01"/>
+                </td>
+                </tr>
+
+                <tr>
+                    <td>
+                    L<sub>e</sub>
+                    <input id="Le" type="range" min="0" max="1" value="0.9" step="0.01"/>
+                    </td>
+                    </tr>
+                <tr>
+
+                <td>
+                Shininess
+                <input id="alpha" type="range" min="10" max="200" value="100" step="5"/>
+                </td>
+                </tr>
+
+                
+
+                </tbody>
+            </table>
+            <label for="wrapMode">Texture Wrap Mode:</label>
+            <select id="wrapMode">
+                <option value="REPEAT">Repeat</option>
+                <option value="CLAMP_TO_EDGE">Clamp to Edge</option>
+            </select>
+    
+            <label for="filterMode">Texture Filter Mode:</label>
+            <select id="filterMode">
+                <option value="LINEAR_MIPMAP_LINEAR" selected>Linear Mipmap Linear</option>
+                <option value="NEAREST">Nearest</option>
+                <option value="LINEAR">Linear</option>
+                <option value="NEAREST_MIPMAP_NEAREST">Nearest Mipmap Nearest</option>
+                <option value="LINEAR_MIPMAP_NEAREST">Linear Mipmap Nearest</option>
+                <option value="NEAREST_MIPMAP_LINEAR">Nearest Mipmap Linear</option>
+            </select>
+            
+            <button onclick="start(5)" class="button">Apply Settings</button>
+            </div>
+            <div class="container">
+              <button onclick="changeSubdivision(event)" id="increment" class="button"> Increase </button>
+              <button onclick="changeSubdivision(event)" id="decrement" class="button"> Decrease </button>
+              <button id="changeorbitButton" class="button"> Stop Rotation</button>
+            </div>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <h3 style="color: #333;">Explain filtering choice:</h3>
+          <p>I chose to use a mipmap mode, in order to have smoother transitions between levels of detail and so to be able to mitigate the minification issues. More specifically, I chose to use Linear Mipmap Linear because it provided smoother transitions while preserving essential texture detail. </p>
+        </div>
+        <p>
+            02561 Computer Graphics - George Stamatopoulos s230251
+        </p>
+    </center>
+    <script type="text/javascript">
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+          init();
+      };
+    </script>
+  </body>
+  <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+  <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+  <script type="text/javascript" src="../angelCommon/MV.js"></script>
+  <script type="text/javascript" src="./worksheet6_3.js"></script>
+  <script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
+    attribute vec4 vNormal;
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionViewMatrix;
+    uniform vec4 lightPosition;
+    varying vec4 fColor;
+    
+    uniform vec4 ka;
+    uniform vec4 kd;
+    uniform vec4 ks;
+    uniform float shininess;
+    uniform vec4 Le;
+
+    varying vec4 fNormal;
+
+    void main() { 
+        vec4 pos = (modelViewMatrix * vPosition);
+
+        vec4 n = normalize(modelViewMatrix*vec4(vNormal.xyz,0.0));
+        vec4 light = modelViewMatrix * lightPosition;
+       
+        // ambient
+        vec4 ambient = ka * Le;
+        
+        // diffuse
+        vec4 diffuse = kd * Le * max(0.0, dot(n, normalize(-light)));
+
+        // specular
+        vec4 view = normalize(vec4(0.0, 0.0, 0.0, 1.0)-vec4(pos.xyz,1.0));
+        vec4 reflection = normalize(reflect(-light, n));
+
+        vec4 specular = vec4(0,0,0,1);
+        if (max(0.0, dot(n, light)) > 0.0)
+        {
+            float alpha = max(0.0, dot(view, reflection));
+            specular = ks * Le * pow(alpha, shininess);
+        }
+
+        gl_Position =  projectionViewMatrix * modelViewMatrix * vPosition;
+        fColor = (ambient + diffuse + specular);
+        fNormal = vNormal;
+    }
+</script>
+  <script id="fragment-shader" type="x-shader/x-fragment">
+    #define M_PI 3.1415926535897932384626433832795
+    precision mediump float;
+    varying vec4 fNormal;
+    varying vec4 fColor;
+    uniform sampler2D tmap;
+
+    void main() {
+        float u = (atan(fNormal.z, -fNormal.x) / (2.0 * M_PI));
+        float v = (acos(fNormal.y) / M_PI);
+        vec2 fTexture = vec2(u,v);
+        gl_FragColor = texture2D( tmap, fTexture)*fColor;
+    }
+  </script>
+ 
+  <script type="text/javascript">
+        var subdivision = 5;
+        function init() {
+            start(subdivision);
+            var incrementBtn = document.getElementById("increment");
+            var decrementBtn = document.getElementById("decrement");
+
+            incrementBtn.onclick = function(){
+            if(subdivision < 6) subdivision++;
+                start(subdivision);
+            };
+            decrementBtn.onclick = function(){
+            if(subdivision > 0) subdivision--;
+                start(subdivision);
+            };
+        };
+  </script>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet8</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+      <h1>
+      <a href="../index.html" style="font-size:36px;">HOME</a>
+      </h1>
+      <div>
+      <hr>
+      <br>
+      <h3>
+      <a href="worksheet8_1.html">Worksheet 8 - part 1</a><br>
+      <a href="worksheet8_2.html" class="focus">Worksheet 8 - part 2</a><br>
+      <a href="worksheet8_3.html">Worksheet 8 - part 3</a><br>
+      <a href="worksheet8_4.html">Worksheet 8 - part 4</a><br>
+      </h3>
+      <br>
+      <hr>
+      </div>
+      <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h2 style="color: #333;">Task:</h2>
+        <ul>
+          <li>A light source position is needed to cast shadows. Introduce an animated point light that circles the scene with circle center (0, 2, −2) and radius 2. Implement projection shadows using the following steps:</li>
+          <ul>
+              <li>Create a projection matrix 𝑴𝑝 that projects geometry onto the ground plane 𝑦 = −1. Projection to a plane different from 𝑦 = 0 is done by subtracting the 𝑦-coordinate of the plane from the 𝑦-coordinate of the light source in 𝑴𝑝.</li>
+              <li>Construct a shadow model matrix 𝑴𝑠 by concatenating 𝑴𝑝 with model and translation matrices so that shadow polygons are projected from the current position of the point light onto the ground plane.</li>
+              <li>Use the shadow model matrix to draw the smaller quads again but as shadow polygons. Note that drawing order is important. Ensure that the shadow polygons are in front of the ground polygon, but behind the smaller quads.</li>
+          </ul>
+        </ul>      
+      </div>
+      <div class="canvas-container"> 
+        <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+        </canvas>
+      </div>
+      <p>
+          02561 Computer Graphics - George Stamatopoulos s230251
+      </p>
+  </center>
+    <script type="text/javascript">
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+          init();
+      };
+    </script>
+  </body>
+  <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+  <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+  <script type="text/javascript" src="../angelCommon/MV.js"></script>
+  <script type="text/javascript" src="./worksheet8_2.js"></script>
+  <script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec3 vPosition;
+    attribute vec2 vTexture;
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionViewMatrix;
+    varying vec2 fTexture;
+
+    void main() { 
+        gl_Position =  projectionViewMatrix * modelViewMatrix * vec4(vPosition,1);
+        fTexture = vTexture;
+    }
+  </script>
+  <script id="fragment-shader" type="x-shader/x-fragment">
+
+    precision mediump float;
+    varying vec2 fTexture;
+    uniform sampler2D tmap;
+
+    void main() {
+        gl_FragColor = texture2D( tmap, fTexture);
+    }
+  </script>
+ 
+  <script type="text/javascript">
+        function init() {
+            start();
+        };
+  </script>
+</html>

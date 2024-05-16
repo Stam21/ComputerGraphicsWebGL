@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet6</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+        <h1>
+        <a href="../index.html" style="font-size:36px;">HOME</a>
+        </h1>
+        <div>
+        <hr>
+        <br>
+        <h3>
+          <a href="worksheet6_1.html">Worksheet 6 - part 1</a><br>
+          <a href="worksheet6_2.html" class="focus">Worksheet 6 - part 2</a><br>
+          <a href="worksheet6_3.html">Worksheet 6 - part 3</a><br>
+        </h3>
+        <br>
+        <hr>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <h2 style="color: #333;">Task:</h2>
+          <p>
+            Create buttons and/or selection menus that enable you to switch between
+            different texture wrapping modes (repeat or clamp-to-edge) and all six
+            different texture filtering modes (nearest, linear, nearest mipmap nearest,
+            linear mipmap nearest, nearest mipmap linear, linear mipmap linear). <br>
+            Explain the effect of the different filtering modes and their influence on
+            texture magnification and minification issues.
+          </p>
+        </div>
+        <div class="canvas-container"> 
+            <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+            </canvas>
+            <div class="container">
+                <label for="wrapMode">Texture Wrap Mode:</label>
+                <select id="wrapMode">
+                    <option value="REPEAT">Repeat</option>
+                    <option value="CLAMP_TO_EDGE">Clamp to Edge</option>
+                </select>
+        
+                <label for="filterMode">Texture Filter Mode:</label>
+                <select id="filterMode">
+                    <option value="NEAREST">Nearest</option>
+                    <option value="LINEAR">Linear</option>
+                    <option value="NEAREST_MIPMAP_NEAREST">Nearest Mipmap Nearest</option>
+                    <option value="LINEAR_MIPMAP_NEAREST">Linear Mipmap Nearest</option>
+                    <option value="NEAREST_MIPMAP_LINEAR">Nearest Mipmap Linear</option>
+                    <option value="LINEAR_MIPMAP_LINEAR">Linear Mipmap Linear</option>
+                </select>
+                
+                <button onclick="start()">Apply Settings</button>
+            </div>
+        </div>
+        <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <h3 style="color: #333;">Effect of Different Texture Filtering Modes:</h3>
+          <ul>
+            <li><strong>Nearest:</strong> Selects the texel nearest to the specified texture coordinates. Results in blocky appearance, especially noticeable during magnification.</li>
+            
+            <li><strong>Linear:</strong> Performs linear interpolation between adjacent texels. Provides smoother results compared to Nearest, especially for magnification, but can introduce blurriness.</li>
+            
+            <li><strong>Nearest Mipmap Nearest:</strong> Selects the nearest mip level and then performs Nearest filtering within that level. Helps reduce aliasing artifacts but can still result in blockiness or texture popping.</li>
+            
+            <li><strong>Linear Mipmap Nearest:</strong> Selects the nearest mip level and then performs Linear filtering within that level. Offers smoother transitions between mip levels compared to Nearest Mipmap Nearest.</li>
+            
+            <li><strong>Nearest Mipmap Linear:</strong> Performs Linear filtering between two nearest mip levels. Provides smoother transitions between mip levels compared to Nearest Mipmap Nearest but may still exhibit some aliasing artifacts.</li>
+            
+            <li><strong>Linear Mipmap Linear:</strong> Performs Linear filtering between two nearest mip levels and then performs linear interpolation within each level. Offers the smoothest results with minimal aliasing, especially for both magnification and minification, but is the most computationally expensive.</li>
+        </ul>
+        </div>
+        <p>
+            02561 Computer Graphics - George Stamatopoulos s230251
+        </p>
+    </center>
+    <script type="text/javascript">
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+          init();
+      };
+    </script>
+  </body>
+  <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+  <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+  <script type="text/javascript" src="../angelCommon/MV.js"></script>
+  <script type="text/javascript" src="./worksheet6_2.js"></script>
+  <script id="vertex-shader" type="x-shader/x-vertex">
+
+    attribute vec3 vPosition;
+    attribute vec3 vColor;
+    attribute vec2 vTexture;
+    
+    uniform mat4 modelView;
+    uniform mat4 perspectiveMatrix;
+    
+    varying vec4 fColor;
+    varying vec2 fTexture;
+    
+    void main()
+    {
+        fColor = vec4(vColor,1.0);
+        fTexture = vTexture;
+        gl_Position = perspectiveMatrix * modelView * vec4(vPosition,1.0);
+    }
+  </script>
+    
+  <script id="fragment-shader" type="x-shader/x-fragment">
+    
+    precision mediump float;
+    
+    varying vec4 fColor;
+    varying  vec2 fTexture;
+    
+    uniform sampler2D tmap;
+    
+    void main()
+    {
+    
+        gl_FragColor = fColor * texture2D( tmap, fTexture );
+    
+    }
+  </script>
+  
+  <script type="text/javascript">
+        function init() {
+            start();
+        };
+  </script>
+</html>

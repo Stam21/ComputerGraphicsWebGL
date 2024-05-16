@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet8</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+      <h1>
+      <a href="../index.html" style="font-size:36px;">HOME</a>
+      </h1>
+      <div>
+      <hr>
+      <br>
+      <h3>
+      <a href="worksheet8_1.html" class="focus">Worksheet 8 - part 1</a><br>
+      <a href="worksheet8_2.html">Worksheet 8 - part 2</a><br>
+      <a href="worksheet8_3.html">Worksheet 8 - part 3</a><br>
+      <a href="worksheet8_4.html">Worksheet 8 - part 4</a><br>
+      </h3>
+      <br>
+      <hr>
+      </div>
+      <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h2 style="color: #333;">Task:</h2>
+        <ul>
+          <li>The scene to be rendered consists of three quadrilaterals (quads). One is a large texture mapped quad in the plane 𝑦 = −1 (𝑥 ∈ [−2, 2], 𝑧 ∈ [−1, −5]), the others are smaller quads colored red. Let us refer to the large quad as the ground. One of the two smaller quads should be parallel to 𝑦 = −1, but placed above the ground (𝑦 = −0.5, 𝑥 ∈ [0.25, 0.75], 𝑧 ∈ [−1.25, −1.75]). The other should be perpendicular to 𝑦 = −1 with two vertices intersecting the ground (𝑥 = −1, 𝑦 ∈ [−1, 0], 𝑧 ∈ [−2.5, −3]). Create a WebGL program that draws this scene. Here are some steps:</li>
+          <ul>
+              <li>Start from Part 1 of Worksheet 6. Use the coordinates given above to set the vertex coordinates of the ground. Adjust the texture coordinates of the ground so that the texture fills out the square without being repeated.</li>
+              <li>Replace the checkerboard texture by the texture image in xamp23.png (available on DTU Learn).</li>
+              <li>In initialization, switch to gl.TEXTURE1 using gl.activeTexture and create a new texture of 1 × 1 resolution, where you store just a single red color: Uint8Array([255, 0, 0]).</li>
+              <li>Add the two smaller quads to your vertex and texture coordinate buffers. Draw the ground quad with texture 0 and the smaller red quads with texture 1.</li>
+          </ul>
+        </ul>
+      </div>
+      <div class="canvas-container"> 
+        <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+        </canvas>
+      </div>
+      <p>
+          02561 Computer Graphics - George Stamatopoulos s230251
+      </p>
+  </center>
+    <script type="text/javascript">
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+          init();
+      };
+    </script>
+  </body>
+  <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+  <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+  <script type="text/javascript" src="../angelCommon/MV.js"></script>
+  <script type="text/javascript" src="./worksheet8_1.js"></script>
+  <script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec3 vPosition;
+    attribute vec2 vTexture;
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionViewMatrix;
+    varying vec2 fTexture;
+
+    void main() { 
+        gl_Position =  projectionViewMatrix * modelViewMatrix * vec4(vPosition,1);
+        fTexture = vTexture;
+    }
+  </script>
+  <script id="fragment-shader" type="x-shader/x-fragment">
+
+    precision mediump float;
+    varying vec2 fTexture;
+    uniform sampler2D tmap;
+
+    void main() {
+        gl_FragColor = texture2D( tmap, fTexture);
+    }
+  </script>
+ 
+  <script type="text/javascript">
+        function init() {
+            start();
+        };
+  </script>
+</html>

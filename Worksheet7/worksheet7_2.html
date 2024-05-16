@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Worksheet7</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+  </head>
+
+  <body onload="showPage()">
+    <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+    </div>
+    <img src="../5314.jpg" />
+    <center style="display:none;" id="content">
+      <h1>
+      <a href="../index.html" style="font-size:36px;">HOME</a>
+      </h1>
+      <div>
+      <hr>
+      <br>
+      <h3>
+      <a href="worksheet7_1.html">Worksheet 7 - part 1</a><br>
+      <a href="worksheet7_2.html" class="focus">Worksheet 7 - part 2</a><br>
+      <a href="worksheet7_3.html">Worksheet 7 - part 3</a><br>
+      <a href="worksheet7_4.html">Worksheet 7 - part 4</a><br>
+      </h3>
+      <br>
+      <hr>
+      </div>
+      <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h2 style="color: #333;">Task:</h2>
+        <ul>
+          <li>The next step is to also draw the environment in the background. To do this, we draw a screen-filling quad very close to the far plane of the view frustum and texture it using the cube map.</li>
+          <ul>
+              <li>A screen-filling quad close to the far plane is most easily drawn using clip coordinates, where the diagonal goes from (−1, −1, 0.999, 1) to (1, 1, 0.999, 1). Insert this background quad into your scene.</li>
+              <li>Draw the background quad using the same shaders as in Part 1 but introduce a uniform matrix 𝑴tex in the vertex shader that transforms the vertex position to texture coordinates.</li>
+              <li>For the sphere, 𝑴tex is an identity matrix. The vertices of the background quad are however in clip space, so its model-view-projection matrix is an identity matrix, but its 𝑴tex should transform from clip space positions to world space directions. Create 𝑴tex for the background quad using (a) the inverse of the projection matrix to go from clip coordinates to camera coordinates and (b) the inverse of the rotational part of the view matrix (no translation) to get direction vectors in world coordinates. Explain the transformation.</li>
+          </ul>
+        </ul> 
+      </div>
+      <div class="canvas-container"> 
+        <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+        </canvas>
+        <div class="container">
+        <button id="changeorbitButton" class="button"> Stop Rotation</button>
+        <table style="background-color:#7BA6C7;">
+            <tbody>
+            <tr>
+            <td>
+            K<sub>a</sub>
+            <input id="ka" type="range" min="0" max="1" value="0.7" step="0.01"/>
+            </td>
+            </tr>
+
+            <tr>
+            <td>
+            K<sub>d</sub>
+            <input id="kd" type="range" min="0" max="1" value="0.7" step="0.01"/>
+            </td>
+            </tr>
+
+            <tr>
+            <td>
+            K<sub>s</sub>
+            <input id="ks" type="range" min="0" max="1" value="0.1" step="0.01"/>
+            </td>
+            </tr>
+
+            <tr>
+                <td>
+                L<sub>e</sub>
+                <input id="Le" type="range" min="0" max="1" value="0.9" step="0.01"/>
+                </td>
+                </tr>
+            <tr>
+
+            <td>
+            Shininess
+            <input id="alpha" type="range" min="10" max="200" value="100" step="5"/>
+            </td>
+            </tr>
+
+            
+
+            </tbody>
+        </table>
+        <label for="wrapMode">Texture Wrap Mode:</label>
+        <select id="wrapMode">
+            <option value="REPEAT">Repeat</option>
+            <option value="CLAMP_TO_EDGE">Clamp to Edge</option>
+        </select>
+
+        <label for="filterMode">Texture Filter Mode:</label>
+        <select id="filterMode">
+            <option value="NEAREST">Nearest</option>
+            <option value="LINEAR">Linear</option>
+            <option value="NEAREST_MIPMAP_NEAREST">Nearest Mipmap Nearest</option>
+            <option value="LINEAR_MIPMAP_NEAREST">Linear Mipmap Nearest</option>
+            <option value="NEAREST_MIPMAP_LINEAR">Nearest Mipmap Linear</option>
+            <option value="LINEAR_MIPMAP_LINEAR">Linear Mipmap Linear</option>
+        </select>
+        
+        <button onclick="start()" class="button">Apply Settings</button>
+      </div>
+      </div>
+      <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <h3 style="color: #333;">Explain filtering choice:</h3>
+        <ol>
+          <li>
+              <strong>Inverse Projection Matrix:</strong>
+              <br>
+              <p>By taking the inverse of the projection matrix, we can go from clip coordinates back to camera space. This step is necessary because we want to map the screen-filling quad in clip space to directions in camera space.</p>
+          </li>
+          <li>
+              <strong>Inverse Rotational Part of the View Matrix:</strong>
+              <br>
+              <p>By taking the inverse of this rotational part, we can transform directions from camera space to world space. This step ensures that the texture coordinates calculated from the quad's vertices accurately represent directions in the world.</p>
+          </li>
+      </ol>
+        <p>Combining these transformations effectively converts the clip space positions of the background quad into world space directions suitable for texture mapping using the cube map. This process allows the background quad to correctly sample the environment surrounding the scene, providing a realistic backdrop.</p>
+      </div>
+      <p>
+          02561 Computer Graphics - George Stamatopoulos s230251
+      </p>
+  </center>
+    <script type="text/javascript">
+      function showPage() {
+          setTimeout(() => {
+            document.getElementById("content").style.display = "block";
+            document.getElementById("bodyLoad").style.display = "none";
+          }, 500);
+          init();
+      };
+    </script>
+  </body>
+  <script type="text/javascript" src="../angelCommon/initShaders.js"></script>
+  <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+  <script type="text/javascript" src="../angelCommon/MV.js"></script>
+  <script type="text/javascript" src="./worksheet7_2.js"></script>
+  <script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
+    attribute vec4 vNormal;
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionViewMatrix;
+    uniform mat4 textureMatrix;
+    uniform vec4 lightPosition;
+    varying vec4 fColor;
+    varying vec3 tex;
+    uniform vec4 ka;
+    uniform vec4 kd;
+    uniform vec4 ks;
+    uniform float shininess;
+    uniform vec4 Le;
+
+    varying vec4 fNormal;
+
+    void main() { 
+        vec4 pos = (modelViewMatrix * vPosition);
+
+        vec4 n = normalize(modelViewMatrix*vec4(vNormal.xyz,0.0));
+        vec4 light = modelViewMatrix * lightPosition;
+       
+        // ambient
+        vec4 ambient = ka * Le;
+        
+        // diffuse
+        vec4 diffuse = kd * Le * max(0.0, dot(n, normalize(-light)));
+
+        // specular
+        vec4 view = normalize(vec4(0.0, 0.0, 0.0, 1.0)-vec4(pos.xyz,1.0));
+        vec4 reflection = normalize(reflect(-light, n));
+
+        vec4 specular = vec4(0,0,0,1);
+        if (max(0.0, dot(n, light)) > 0.0)
+        {
+            float alpha = max(0.0, dot(view, reflection));
+            specular = ks * Le * pow(alpha, shininess);
+        }
+
+        tex = (textureMatrix * vPosition).xyz;
+        gl_Position =  modelViewMatrix * vPosition;
+        fColor = (ambient + diffuse + specular);
+        fNormal = vNormal;
+    }
+  </script>
+  <script id="fragment-shader" type="x-shader/x-fragment">
+    precision mediump float;
+    varying vec4 fNormal;
+    varying vec4 fColor;
+    varying vec3 tex;
+    uniform samplerCube tmap;
+
+    void main() {
+        gl_FragColor = textureCube( tmap, tex)*fColor;
+    }
+  </script>
+ 
+  <script type="text/javascript">
+        function init() {
+            start();
+        };
+  </script>
+</html>

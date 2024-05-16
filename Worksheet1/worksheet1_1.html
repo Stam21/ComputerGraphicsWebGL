@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Worksheet1</title>
+        <link rel="stylesheet" type="text/css" href="index.css">
+      </head>
+    <body onload="showPage()">
+        <div id="bodyLoad">
+          <img src="../5314_2.jpg" />
+        </div>
+        <img src="../5314.jpg" />
+        <center style="display:none;" id="content">
+            <h1>
+            <a href="../index.html" style="font-size:36px;">HOME</a>
+            </h1>
+            <div>
+            <hr>
+            <br>
+            <h3>
+            <a href="worksheet1_1.html" class="focus">Worksheet 1 - part 1</a><br>
+            <a href="worksheet1_2.html">Worksheet 1 - part 2</a><br>
+            <a href="worksheet1_3.html">Worksheet 1 - part 3</a><br>
+            <a href="worksheet1_4.html">Worksheet 1 - part 4</a><br>
+            <a href="worksheet1_5.html">Worksheet 1 - part 5</a><br>
+            </h3>
+            <br>
+            <hr>
+            </div>
+            <div style="background-color: rgba(255, 255, 255, 0.5); width: 50%; margin: 0 auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333;">Task:</h2>
+                <p>
+                    Setup a basic WebGL application.
+                    Create a HTML document with a 512x512 canvas element and
+                    write a script to create a WebGL context.
+                    Setup a viewport and clear the canvas with the color cornflower
+                    blue (0.3921, 0.5843, 0.9294, 1.0).
+                    If not already done, move the script to a separate JavaScript file
+                    and include it in the HTML document.
+                    Setup the WebGL context using Angel’s “setupWebGL”. You
+                    can use the window.onload event to initialize and setup the
+                    application.
+                </p>
+              </div>
+            <canvas id="gl-canvas" width="512" height="512" style="border:1px solid #000000;">
+            </canvas>
+            <p>
+                02561 Computer Graphics - George Stamatopoulos s230251
+            </p>
+        </center>
+        <script type="text/javascript">
+
+            function showPage() {
+                setTimeout(() => {
+                  document.getElementById("content").style.display = "block";
+                  document.getElementById("bodyLoad").style.display = "none";
+                }, 500);
+                init();
+            };
+          </script>
+    </body>
+    <script type="text/javascript" src="./worksheet1_1.js"></script>
+    <script type="text/javascript" src="../angelCommon/webgl-utils.js"></script>
+    <script type="text/javascript">
+        function init() {
+            // Part 1 - Setup the WebGL context and draw canvas
+            const canvas = document.getElementById("gl-canvas");
+            const gl = WebGLUtils.setupWebGL(canvas);
+            setupViewport(gl,canvas);
+        };
+    </script>
+</html>
+
+
